@@ -10,6 +10,7 @@ import TrackingIn from "@/components/motion/TrackingIn";
 import RevealCopy from "@/components/motion/RevealCopy";
 import ScrollLabel from "@/components/motion/ScrollLabel";
 import TargetRings from "@/components/motion/TargetRings";
+import Photo from "@/components/visual/Photo";
 import ActionIcon from "@/components/ui/ActionIcon";
 import styles from "./ContactCTA.module.css";
 
@@ -50,6 +51,20 @@ export default function ContactCTA() {
           scrollTrigger: { trigger: el, start: "top bottom", end: "top top", scrub: SCRUB.soft },
         }
       );
+
+      const backdrop = el.querySelector(`.${styles.backdrop}`);
+      if (backdrop) {
+        gsap.fromTo(
+          backdrop,
+          { yPercent: -7, scale: 1.12 },
+          {
+            yPercent: 5,
+            scale: 1,
+            ease: "none",
+            scrollTrigger: { trigger: el, start: "top bottom", end: "bottom bottom", scrub: SCRUB.tight },
+          }
+        );
+      }
 
       if (rings.current) {
         gsap.fromTo(
@@ -93,6 +108,11 @@ export default function ContactCTA() {
   return (
     <div ref={root} className={styles.outer}>
       <section id="contact" ref={panel} className={styles.section} data-section="contact">
+        {/* The closing frame is the archery hall — the calmest room on site,
+            and the one that reads best behind type. */}
+        <div className={styles.backdrop} aria-hidden="true">
+          <Photo name="archery" alt="" grade="none" position="center 30%" />
+        </div>
         <div className={styles.ground} aria-hidden="true" />
         <div ref={rings} className={styles.rings} aria-hidden="true">
           <TargetRings rings={10} weight={0.3} bullseye={false} />

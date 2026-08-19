@@ -36,7 +36,7 @@
   inset-block-start: 6%;
   inline-size: 118%;
   aspect-ratio: 1;
-  --ring-color: var(--sand);
+  --ring-color: var(--mist);
   opacity: 0.14;
   pointer-events: none;
   will-change: transform;
@@ -70,7 +70,7 @@
 }
 
 /* The third line carries the accent so the eye lands on it. */
-.heading span:last-child span { color: var(--accent); }
+.heading span:last-child span { color: var(--accent-bright); }
 
 .copy {
   margin-block-start: 30px;
@@ -99,7 +99,7 @@
   font-size: var(--t-label);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--sand-dim);
+  color: var(--mist-dim);
   max-inline-size: 14ch;
   line-height: 1.4;
 }

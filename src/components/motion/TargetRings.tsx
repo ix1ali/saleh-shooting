@@ -8,7 +8,7 @@ type Props = {
   className?: string;
   /** Hairline weight in viewBox units. */
   weight?: number;
-  tone?: "bone" | "sand" | "accent" | "mixed";
+  tone?: "bone" | "mist" | "accent" | "mixed";
   /** Draws the filled centre. The hero uses this as its transition portal. */
   bullseye?: boolean;
   /** Adds the four cardinal sight ticks. */

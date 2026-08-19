@@ -52,41 +52,33 @@ Nothing is hard-coded in a component. Each entry is tagged:
 
 ## 2. Imagery
 
-The site uses **real photographs from @shootingq8**, pulled from the account's public
-grid and processed into `public/media/` as AVIF + WebP. Originals are kept in
-`public/media/raw/`.
+Source files live in `public/updated images/` (PNG, ~1086x1448). They are processed
+into `public/media/` as AVIF + WebP by:
 
-| File | Shows | Used by |
+```bash
+node _media.mjs
+```
+
+Re-run that after adding or replacing a source file. Edit the `PLAN` array in
+`_media.mjs` to change crops or output sizes.
+
+| Output | Source | Used by |
 | --- | --- | --- |
-| `range` | Two shooters at the scoring board on the line | Hero portal, Intro background, Facility 01 |
-| `pistol` | Shooter on a handgun lane | Disciplines 01, Standards underlay |
-| `rifle` | Scoped rifle from a bench rest | Disciplines 02 |
-| `shotgun` | Shotgun shooter (cropped off the promo text) | Disciplines 03 |
-| `archery` | Recurve bow in the indoor archery hall | Disciplines 04 |
-| `youth` | A young shooter with his target | Facility 02 |
-| `event` | Flags at an event in the hall | Facility 03 |
-| `murouj` | The Al Murooj entrance at night | Facility 04 |
+| `hero` | pistol.png (taller crop) | Hero plate |
+| `pistol` | pistol.png | Disciplines 01, Activities |
+| `rifle` | rifle.png | Disciplines 02, Activities |
+| `shotgun` | shotgun.png | Disciplines 03, Activities |
+| `archery` | archery.png | Disciplines 04, Activities, Contact backdrop |
+| `range` | range.png | Hero portal, Intro, Activities |
+| `booths` | range2.png | Activities |
 
-### Two things to check before this goes live
+The earlier low-resolution Instagram grabs have been deleted.
 
-1. **Consent for identifiable people.** Several photographs show faces, including a
-   child (`youth`). The facility posted these itself, but a website is a different
-   use from an Instagram grid. Confirm you are happy to publish each one, and swap
-   any you are not.
-2. **Resolution.** Instagram only serves these at 640px; requests for 1080/1440
-   derivatives were refused. They are upscaled 2.5x to 900x1200, which is soft under
-   close inspection. **Supplying the originals is the single biggest quality win
-   available** — drop them in `public/media/raw/` and re-run the processing step.
+`Photo` applies a light unify pass (`saturate(.88) contrast(1.06)`) plus edge-only
+tonal ramps, so the middle of each frame — where the subject is — stays clean.
 
-To swap an image, change the `image` field on the matching entry in `src/data/site.ts`
-to another base name and update its caption to match what the photograph shows.
-Setting `image: null` falls back to the procedural artwork in `DisciplineArt`.
-
-Incoming photography is pulled onto the palette by `Photo` — a light unify pass
-(`saturate(.88) contrast(1.06)`) plus edge-only tonal ramps, so the middle of the
-frame where the subject sits stays clean.
-
-**Video** is not wired up: Instagram serves reel thumbnails, not the video files.
+**Consent:** several photographs show identifiable faces. Confirm you are cleared to
+publish each one before launch.
 
 ## 3. Motion architecture
 
@@ -113,33 +105,27 @@ reduced-motion helpers.
 
 | # | Section | Idea |
 | --- | --- | --- |
-| 01 | Hero | Real CSS-3D lane; scroll drives a camera down it into the bullseye |
-| 02 | Intro | Editorial assembly — rule, then lines, then copy; ground and ring on three speeds |
+| 01 | Hero | Scroll pushes the camera into the real lane; the sighting rings become the doorway |
+| 02 | Intro | Editorial assembly — rule, then lines, then copy, over a parallaxing plate |
 | 03 | Disciplines | Pinned panels stack; the incoming lane rises over the outgoing one |
-| 04 | Selector | Staged questions; the result expands out of a ring |
-| 05 | Facility | Film strip — windows unspool, pictures drift, captions overtake their frames |
-| 05b | Archery | The only horizontal section: an arrow travelling a line uncovers the heading |
-| 06 | Standards | A technical drawing that draws itself; words lock onto the grid |
+| 04 | Activities | Grid where each card carries its own discipline's motion — recoil, arrow, push, drift |
+| 05 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
+| 06 | First visit | A round travels a rail, lighting each step of the session as it passes |
 | 07 | Visit | Mechanical — digits roll, rules grow, address reveals line by line |
-| 08 | Contact | Panel rises over the previous section; tracking closes; the mark lands last |
+| 08 | Contact | Panel rises over a photographic backdrop; tracking closes; the mark lands last |
 
-### The hero, specifically
+### Two things worth knowing
 
-The lane is genuine CSS 3D, not a parallax fake. Floor, ceiling and walls are planes in
-space; `--camN` is a single `translateZ` driven by scroll. The target grows purely
-through perspective — its scale is never animated.
+**Scrubbed timelines publish from the timeline, not the trigger.** A ScrollTrigger's
+`onUpdate` fires on scroll while the scrub tween advances the playhead on later ticks.
+Writing scene state from the trigger therefore publishes the previous frame and — once
+scrolling stops — never fires again, freezing the scene at a stale value. Every scrubbed
+section here writes from `timeline.onUpdate`.
 
-Two details that matter if you edit it:
-
-- Depth furniture fades out via a pure-CSS expression
-  (`calc((depth - 300 - var(--camN)) / 420 * var(--sceneOn))`) so nothing ever
-  straddles the camera plane and blows up across the frame. No per-element JS runs
-  per frame.
-- The camera finishes at `CAM_END = 3400`, which is **200 units past** the target
-  plane. Under CSS perspective an object scales by `p / (p - z)`; stopping at the
-  target plane would top out at roughly half the screen width. The target rig is
-  anchored at `top: 46%` to sit exactly on the perspective origin, so the bullseye
-  stays locked to the portal centre at every scale.
+**Fixed chrome is centred with auto margins, never `translateX(-50%)`.** The bar, action
+bar, menu overlay and language curtain are all animated by GSAP, and any transform it
+writes replaces the centring one — which threw the bar off-screen the moment the layout
+flipped to RTL.
 
 ---
 
@@ -154,6 +140,9 @@ scripts.
   script and per-character splitting tears its ligatures apart. `TrackingIn` falls back
   to a mask reveal in Arabic for the same reason.
 - Clock times and index numbers are forced `direction: ltr` so they never mirror.
+- Switching runs behind a curtain (`LanguageCurtain`): it wipes in, the locale changes,
+  ScrollTrigger remeasures, and it lifts. Swapping in place made the page jump, because
+  the two scripts have completely different metrics.
 
 ---
 
@@ -174,11 +163,14 @@ scripts.
 
 ## 6. Colour
 
-The accent is derived from the brand's own artwork, not invented. Sampling the official
-Instagram graphics gives a deep navy `#0D2D60` and a teal `#0A627E`. Neither is legible
-as an accent on a near-black page, so the working accent `--accent: #3D9BD4` is a lifted
-member of the same family, with the true navy kept for surfaces and fills. Near-blacks
-carry a slight navy cast so the whole page sits in that family.
+Taken from the facility itself. The interior is near-black lit by blue LED strips
+running from a royal `#1C4EB0` to a cyan `#279ACF`, so:
+
+- `--accent: #2E90F5` — the working blue, readable on near-black
+- `--accent-bright: #6FBEFF` — highlights and glows
+- `--accent-deep: #12428F` — fills
+- Surfaces (`--void`, `--ink`, `--charcoal`) all carry a navy cast
+- `--bone: #F2F6FB` is a cool white; the neutrals (`--mist`, `--mist-dim`) are cool greys
 
 Change `--accent` in `src/styles/globals.css` and every accented element follows.
 

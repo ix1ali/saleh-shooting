@@ -24,36 +24,37 @@
 
 :root {
   /* ---- Surface -----------------------------------------------------
-     Near-blacks carry a slight navy cast so the page sits in the same family
-     as the brand blue sampled from the official Instagram artwork. */
-  --void:        #06080C;
-  --ink:         #0B0E14;
-  --charcoal:    #101620;
-  --gunmetal:    #1B2432;
-  --steel:       #2C3746;
+     The facility itself is a near-black interior lit by blue LED strips.
+     Every surface tone is pulled toward that navy rather than neutral grey,
+     so the chrome and the photography sit in one room. */
+  --void:        #04070E;
+  --ink:         #070B14;
+  --charcoal:    #0C1220;
+  --gunmetal:    #161F33;
+  --steel:       #24314A;
 
-  /* ---- Light ------------------------------------------------------ */
-  --bone:        #F3F2EE;
-  --sand:        #B8AD9C;
-  --sand-dim:    #7C7466;
+  /* ---- Light -------------------------------------------------------
+     Cool white, not warm. Warm neutrals fought the blue in the imagery. */
+  --bone:        #F2F6FB;
+  --mist:        #A8B6CC;
+  --mist-dim:    #66768F;
 
   /* ---- Accent ------------------------------------------------------
-     Sampled from the official Instagram artwork: a deep navy (#0D2D60) and a
-     teal (#0A627E). Neither is legible as an accent on a near-black page, so
-     the working accent is a lifted member of the same family, with the true
-     brand navy kept for surfaces and fills. */
-  --accent:       #3D9BD4;
-  --accent-soft:  #14568C;
-  --accent-deep:  #0D2D60;
-  --accent-teal:  #0A627E;
-  --accent-glow:  rgba(61, 155, 212, 0.28);
+     Sampled from the LED strips in the facility photography, which run
+     from a royal #1C4EB0 through to a cyan #279ACF. */
+  --accent:        #2E90F5;
+  --accent-bright: #6FBEFF;
+  --accent-soft:   #1B5FB8;
+  --accent-deep:   #12428F;
+  --accent-teal:   #279ACF;
+  --accent-glow:   rgba(46, 144, 245, 0.34);
 
   /* ---- Semantic --------------------------------------------------- */
   --bg:          var(--ink);
   --fg:          var(--bone);
-  --muted:       var(--sand);
-  --rule:        rgba(243, 242, 238, 0.14);
-  --rule-strong: rgba(243, 242, 238, 0.30);
+  --muted:       var(--mist);
+  --rule:        rgba(242, 246, 251, 0.13);
+  --rule-strong: rgba(242, 246, 251, 0.30);
 
   /* ---- Layout ----------------------------------------------------- */
   --shell-w:     430px;
@@ -168,17 +169,19 @@ a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transpar
   }
 }
 
-/* Fixed UI must align to the shell column, not the browser viewport. */
+/* Fixed UI must align to the shell column, not the browser viewport.
+   Centred with auto margins rather than translateX(-50%): these elements are
+   animated by GSAP, and any transform it writes would replace the centring
+   one — which sent the bar off-screen the moment the layout flipped to RTL. */
 .fixed-shell {
   position: fixed;
   inset-block-start: 0;
-  inset-inline-start: 50%;
+  inset-inline: 0;
+  margin-inline: auto;
   width: 100%;
   max-width: var(--shell-w);
-  transform: translateX(-50%);
   pointer-events: none;
 }
-html[dir="rtl"] .fixed-shell { transform: translateX(50%); }
 .fixed-shell > * { pointer-events: auto; }
 
 /* ---- Typographic primitives ----------------------------------------- */
@@ -203,7 +206,7 @@ html[lang="ar"] .display {
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--sand);
+  color: var(--mist);
 }
 html[lang="ar"] .label { letter-spacing: 0.06em; text-transform: none; }
 
@@ -269,3 +272,53 @@ html[lang="ar"] .body-copy { line-height: 1.85; }
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================================
+   MICRO-INTERACTIONS
+   Small, shared behaviours so every tappable thing on the site answers back
+   the same way. Transform and opacity only.
+   ====================================================================== */
+
+/* Everything tappable compresses slightly under the finger. Keyboard users
+   get the focus ring instead, so this is scoped to the active state. */
+button:active,
+a[class]:active {
+  transition-duration: 0.06s;
+}
+
+/* A hairline that grows from the leading edge under any inline link. */
+.inline-link {
+  position: relative;
+  color: var(--accent-bright);
+}
+.inline-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -2px;
+  block-size: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s var(--ease-out);
+}
+html[dir="rtl"] .inline-link::after { transform-origin: right center; }
+.inline-link:active::after { transform: scaleX(1); }
+
+/* Selection carries the accent rather than the browser default. */
+::selection { background: var(--accent); color: var(--void); }
+
+/* The scrollbar on desktop, where the phone column is framed. */
+@media (min-width: 560px) {
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #04070E; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--gunmetal);
+    border: 3px solid #04070E;
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--steel); }
+}
+
+/* Anything the page scrolls to should land clear of the fixed bar. */
+[id] { scroll-margin-block-start: 84px; }

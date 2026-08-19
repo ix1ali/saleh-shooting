@@ -16,17 +16,16 @@ const QUESTIONS = selector.questions;
 /**
  * Picks a discipline from the three answers.
  *
- * The logic is deliberately transparent: a stated interest always wins. Only
- * "surprise me" defers to the other two answers, and it then leans on group
- * size and experience rather than choosing at random — a first-timer with
- * family gets pointed somewhere calmer than a returning visitor with friends.
+ * Deliberately transparent rather than clever: a hard preference always wins
+ * (no firearms means archery, full stop), then group size decides between the
+ * social option and the precise one, and experience breaks the remaining tie.
  */
-function recommend(answers: Record<string, string>): string {
-  const { first, interest, party } = answers;
-  if (interest && interest !== "surprise") return interest;
-  if (party === "group" || party === "friends") return "shotgun";
-  if (party === "family") return "archery";
-  return first === "yes" ? "pistol" : "rifle";
+function recommend(a: Record<string, string>): string {
+  if (a.vibe === "noguns") return "archery";
+  if (a.vibe === "loud") return a.party === "solo" ? "pistol" : "shotgun";
+  if (a.vibe === "precise") return a.first === "no" ? "pistol" : "rifle";
+  if (a.party === "group" || a.party === "friends") return "shotgun";
+  return a.first === "no" ? "pistol" : "rifle";
 }
 
 export default function ExperienceSelector() {
@@ -34,6 +33,7 @@ export default function ExperienceSelector() {
   const stage = useRef<HTMLDivElement | null>(null);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [copied, setCopied] = useState(false);
   const { T, version } = useLocale();
 
   const total = QUESTIONS.length;
@@ -128,6 +128,20 @@ export default function ExperienceSelector() {
     gsap.to(el, { yPercent: -14, autoAlpha: 0, duration: 0.36, ease: "power2.in", onComplete: reset });
   }, []);
 
+  /* Copying the draft is the whole point of the tool: Instagram cannot be
+     opened with a prefilled message, so the next best thing is handing the
+     visitor the text and taking them straight to the inbox. */
+  const copy = useCallback((text: string) => {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(text).then(
+      () => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2200);
+      },
+      () => {}
+    );
+  }, []);
+
   const progress = done ? 1 : step / total;
   const q = done ? null : QUESTIONS[step];
   const rec = result ? recommendations[result] : null;
@@ -142,6 +156,8 @@ export default function ExperienceSelector() {
         lines={[T(selector.heading)]}
         className={styles.heading}
       />
+
+      <RevealCopy className={styles.sub}>{T(selector.sub)}</RevealCopy>
 
       <div className={styles.progress}>
         <span className={styles.count}>
@@ -186,7 +202,16 @@ export default function ExperienceSelector() {
             <div className={styles.resultCard}>
               <span className={styles.resultKicker}>{T(selector.resultKicker)}</span>
               <span className={styles.resultTitle}>{T(rec.title)}</span>
-              <RevealCopy className={styles.resultBody}>{T(rec.body)}</RevealCopy>
+
+              <div className={styles.resultWhy}>
+                <span className={styles.resultWhyLabel}>{T(selector.resultWhy)}</span>
+                <p className={styles.resultWhyText}>{T(rec.why)}</p>
+              </div>
+
+              {/* The useful part: a message they can send without writing it. */}
+              <div className={styles.draft}>
+                <p className={styles.draftText}>{T(rec.message)}</p>
+              </div>
 
               <div className={styles.resultActions}>
                 <a
@@ -194,16 +219,25 @@ export default function ExperienceSelector() {
                   href={contact.instagram}
                   target="_blank"
                   rel="noreferrer noopener"
+                  onClick={() => copy(T(rec.message))}
                 >
                   {T(selector.resultCta)}
                   <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
                     <path d="M0 5h12M8.5 1L12.5 5L8.5 9" stroke="currentColor" strokeWidth="1.4" />
                   </svg>
                 </a>
-                <button type="button" className={styles.restart} onClick={restart}>
-                  {T(selector.restart)}
+                <button
+                  type="button"
+                  className={styles.copyBtn}
+                  onClick={() => copy(T(rec.message))}
+                >
+                  {copied ? T(selector.copied) : T(selector.copyCta)}
                 </button>
               </div>
+
+              <button type="button" className={styles.restart} onClick={restart}>
+                {T(selector.restart)}
+              </button>
             </div>
           </div>
         )}

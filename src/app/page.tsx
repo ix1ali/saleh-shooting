@@ -4,10 +4,9 @@ import SiteChrome from "@/components/ui/SiteChrome";
 import RangeHero from "@/components/sections/RangeHero";
 import IntroSection from "@/components/sections/IntroSection";
 import ExperienceStory from "@/components/sections/ExperienceStory";
+import ActivitiesGrid from "@/components/sections/ActivitiesGrid";
 import ExperienceSelector from "@/components/sections/ExperienceSelector";
-import FacilityShowcase from "@/components/sections/FacilityShowcase";
-import ArcheryLine from "@/components/sections/ArcheryLine";
-import SafetySection from "@/components/sections/SafetySection";
+import SessionSteps from "@/components/sections/SessionSteps";
 import HoursLocation from "@/components/sections/HoursLocation";
 import ContactCTA from "@/components/sections/ContactCTA";
 
@@ -22,10 +21,9 @@ export default function Home() {
         <RangeHero />
         <IntroSection />
         <ExperienceStory />
+        <ActivitiesGrid />
         <ExperienceSelector />
-        <FacilityShowcase />
-        <ArcheryLine />
-        <SafetySection />
+        <SessionSteps />
         <HoursLocation />
         <ContactCTA />
       </main>

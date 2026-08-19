@@ -23,7 +23,7 @@ export function buildActions(T: (v: I18n) => string): Action[] {
 
   actions.push({
     id: "instagram",
-    label: T(ui.message),
+    label: T(ui.messageShort),
     href: contact.instagram,
     icon: "instagram",
     external: true,

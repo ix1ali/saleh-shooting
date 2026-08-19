@@ -150,6 +150,13 @@ export default function ExperienceStory() {
                   <span className={styles.title}>{T(exp.title)}</span>
                 </span>
                 <p className={`body-copy ${styles.copy}`}>{T(exp.body)}</p>
+                <div className={styles.facts}>
+                  {exp.facts.map((f, k) => (
+                    <span key={k} className={styles.fact}>
+                      {T(f)}
+                    </span>
+                  ))}
+                </div>
               </div>
             </article>
           ))}
@@ -167,6 +174,7 @@ export default function ExperienceStory() {
 
         <div className={styles.intro}>
           <ScrollLabel tone="bone">{T(experiencesSection.label)}</ScrollLabel>
+          <span className={styles.introHeading}>{T(experiencesSection.heading)}</span>
         </div>
       </div>
     </section>

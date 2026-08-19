@@ -1,0 +1,199 @@
+/* =========================================================================
+   ACTIVITIES — the index.
+   Motion idea: the cards do not share one entrance. Each carries the motion
+   signature of its own discipline — a shotgun card kicks like recoil, the
+   archery card is crossed by an arrow, the rifle card pushes forward, the
+   wide cards drift. The grid assembles rather than fading in.
+   ====================================================================== */
+
+.section {
+  position: relative;
+  padding-block: 15svh 16svh;
+  padding-inline: var(--gutter);
+  background: var(--ink);
+  overflow: hidden;
+}
+
+/* Faint lane rules behind the grid. */
+.rules {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(90deg,
+    rgba(242, 246, 251, 0.04) 0px,
+    rgba(242, 246, 251, 0.04) 1px,
+    transparent 1px,
+    transparent 62px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 76%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 76%, transparent);
+}
+
+.head { position: relative; margin-block-end: 30px; }
+.heading { margin-block-start: 20px; }
+.sub { margin-block-start: 16px; max-inline-size: 32ch; font-size: var(--t-small); }
+
+/* ---- Grid -------------------------------------------------------------- */
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--void);
+  border: 1px solid rgba(242, 246, 251, 0.09);
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.4s var(--ease-out);
+}
+
+.card[data-wide="true"] {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 9;
+}
+
+.card:active { border-color: var(--accent); }
+
+.media {
+  position: absolute;
+  inset: -8%;
+  will-change: transform;
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top,
+      rgba(4, 7, 14, 0.94) 0%,
+      rgba(4, 7, 14, 0.46) 38%,
+      rgba(4, 7, 14, 0.12) 70%),
+    linear-gradient(to top right, rgba(18, 66, 143, 0.28), transparent 62%);
+  transition: opacity 0.45s var(--ease-out);
+}
+.card:active .tint { opacity: 0.78; }
+
+/* A ring that pulses out of the card centre as it arrives — the shot mark. */
+.pulse {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 42%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 1px solid var(--accent-bright);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+:global(html[dir="rtl"]) .pulse { translate: 50% -50%; }
+
+.body {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding: 14px 14px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: var(--bone);
+  will-change: transform;
+}
+:global(html[lang="ar"]) .title {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.sub2 {
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+:global(html[lang="ar"]) .sub2 { letter-spacing: 0.02em; text-transform: none; }
+
+/* Corner index, like a lane number. */
+.index {
+  position: absolute;
+  inset-block-start: 11px;
+  inset-inline-end: 12px;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: rgba(242, 246, 251, 0.5);
+  direction: ltr;
+}
+
+/* Arrow that appears on press. */
+.go {
+  position: absolute;
+  inset-block-end: 15px;
+  inset-inline-end: 13px;
+  inline-size: 26px;
+  block-size: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(242, 246, 251, 0.24);
+  border-radius: 50%;
+  color: var(--bone);
+  transition: background-color 0.35s var(--ease-out), border-color 0.35s var(--ease-out),
+    transform 0.35s var(--ease-out);
+}
+.card:active .go {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.12);
+}
+:global(html[dir="rtl"]) .go svg { transform: scaleX(-1); }
+
+/* ---- Per-discipline signatures ---------------------------------------- */
+
+/* Archery: an arrow crosses the card as it is read. */
+.arrow {
+  position: absolute;
+  inset-block-start: 46%;
+  inset-inline-start: 0;
+  inline-size: 54px;
+  block-size: 12px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.arrowShaft { stroke: rgba(242, 246, 251, 0.75); stroke-width: 1; }
+.arrowHead { stroke: var(--accent-bright); stroke-width: 1.6; stroke-linecap: round; }
+:global(html[dir="rtl"]) .arrow { transform: scaleX(-1); }
+
+/* Firearms: a short muzzle flare on the card as it settles. */
+.flare {
+  position: absolute;
+  inset-block-start: 44%;
+  inset-inline-start: 46%;
+  inline-size: 60%;
+  block-size: 26%;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(180, 220, 255, 0.55), rgba(46, 144, 245, 0.18) 45%, transparent 72%);
+  mix-blend-mode: screen;
+  will-change: opacity, transform;
+}

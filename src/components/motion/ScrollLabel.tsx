@@ -12,7 +12,7 @@ type Props = {
   delay?: number;
   /** Rule sits before the label (default) or is omitted entirely. */
   rule?: boolean;
-  tone?: "sand" | "accent" | "bone";
+  tone?: "mist" | "accent" | "bone";
 };
 
 /**
@@ -25,7 +25,7 @@ export default function ScrollLabel({
   className = "",
   delay = 0,
   rule = true,
-  tone = "sand",
+  tone = "mist",
 }: Props) {
   const root = useRef<HTMLDivElement | null>(null);
   const { version } = useLocale();
