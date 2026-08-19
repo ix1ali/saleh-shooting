@@ -1,0 +1,58 @@
+/* Shared environmental ground. Every layer is a gradient — no images, so it
+   costs nothing to load and stays perfectly on-grade with the palette. */
+
+.ground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.ground[data-tone="deep"]  { background: var(--void); }
+.ground[data-tone="accent"] { background: #070B12; }
+
+/* A soft floor wash, as if light is falling from the lane ceiling. */
+.floorGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 120% 62% at 50% 108%,
+    rgba(184, 173, 156, 0.16) 0%,
+    rgba(184, 173, 156, 0.05) 38%,
+    transparent 68%);
+}
+
+.ground[data-tone="accent"] .floorGlow {
+  background: radial-gradient(ellipse 120% 62% at 50% 108%,
+    rgba(58, 123, 213, 0.22) 0%,
+    rgba(58, 123, 213, 0.06) 40%,
+    transparent 70%);
+}
+
+/* A single shaft of light angled across the frame. */
+.beam {
+  position: absolute;
+  inset-block-start: -30%;
+  inset-inline-start: -20%;
+  inline-size: 90%;
+  block-size: 150%;
+  transform: rotate(18deg);
+  background: linear-gradient(to right,
+    transparent 0%,
+    rgba(243, 242, 238, 0.045) 45%,
+    rgba(243, 242, 238, 0.075) 52%,
+    transparent 100%);
+  filter: blur(1px);
+}
+
+/* Fine static grain. Static — never animated — so it never costs a repaint. */
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.10) 0px, rgba(0, 0, 0, 0.10) 1px, transparent 1px, transparent 2px),
+    repeating-linear-gradient(90deg,
+      rgba(243, 242, 238, 0.014) 0px, rgba(243, 242, 238, 0.014) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: overlay;
+}

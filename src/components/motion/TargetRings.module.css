@@ -1,0 +1,27 @@
+.svg {
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.ring,
+.ticks line {
+  stroke: var(--ring-color, var(--bone));
+  vector-effect: non-scaling-stroke;
+}
+
+.bull {
+  fill: var(--bull-color, var(--bone));
+  opacity: var(--bull-opacity, 0.9);
+}
+
+.svg[data-tone="bone"]  { --ring-color: var(--bone);  --bull-color: var(--bone); }
+.svg[data-tone="sand"]  { --ring-color: var(--sand);  --bull-color: var(--sand); }
+.svg[data-tone="accent"] { --ring-color: var(--accent); --bull-color: var(--accent); }
+
+/* Real targets read as a light field with a dark centre band; "mixed" gives
+   the inner rings the accent so the bullseye holds the eye. */
+.svg[data-tone="mixed"] .ring { stroke: var(--sand); }
+.svg[data-tone="mixed"] .ring[data-ring="0"],
+.svg[data-tone="mixed"] .ring[data-ring="1"] { stroke: var(--accent); }
+.svg[data-tone="mixed"] .bull { fill: var(--accent); }

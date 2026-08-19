@@ -1,0 +1,12 @@
+.mask {
+  position: relative;
+  overflow: hidden;
+  will-change: clip-path;
+}
+
+.inner {
+  inline-size: 100%;
+  block-size: 100%;
+  will-change: transform;
+  transform-origin: center;
+}

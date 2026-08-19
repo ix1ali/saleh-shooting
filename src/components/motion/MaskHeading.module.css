@@ -1,0 +1,24 @@
+.heading {
+  display: block;
+  color: var(--fg);
+}
+
+.heading[data-size="mega"] { font-size: var(--t-mega); }
+.heading[data-size="xl"]   { font-size: var(--t-xl); }
+.heading[data-size="lg"]   { font-size: var(--t-lg); }
+.heading[data-size="md"]   { font-size: var(--t-md); letter-spacing: -0.015em; }
+
+.heading[data-align="center"] { text-align: center; }
+
+.mask {
+  display: block;
+  overflow: hidden;
+  /* Descenders and Arabic marks need room or the mask clips them. */
+  padding-block-end: 0.08em;
+  margin-block-end: -0.08em;
+}
+
+.line {
+  display: block;
+  will-change: transform;
+}

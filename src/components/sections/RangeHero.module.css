@@ -1,0 +1,358 @@
+/* =========================================================================
+   RANGE HERO — the viewport becomes the lane.
+   The scene is real CSS 3D: floor, ceiling and walls are planes in space and
+   the camera is a single translateZ driven by scroll. Depth, parallax and the
+   growth of the target are therefore genuine perspective, not faked scaling.
+   ====================================================================== */
+
+.hero {
+  position: relative;
+  /* Scroll runway for the camera move. Everything inside is sticky. */
+  height: 420svh;
+  background: var(--void);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--void);
+  /* Own compositing layer, so the scene never repaints the page behind it. */
+  isolation: isolate;
+  /* Defaults so the lane is lit if scripting never runs. The scroll timeline
+     takes these to 0 synchronously before the first painted frame. */
+  --sceneOn: 1;
+  --lightsOn: 1;
+}
+
+/* ---- 3D stage -------------------------------------------------------- */
+
+.world {
+  position: absolute;
+  inset: 0;
+  perspective: 300px;
+  perspective-origin: 50% 46%;
+  transform-style: preserve-3d;
+}
+
+.camera {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  /* Driven by scroll. 0 = far from the target, high = at the target. */
+  transform: translateZ(calc(var(--camN, 0) * 1px));
+  will-change: transform;
+}
+
+.plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  backface-visibility: hidden;
+}
+
+/* Floor: laid flat below eye level, running the length of the lane. */
+.floor {
+  width: var(--laneW);
+  height: var(--laneLen);
+  transform: translate(-50%, -50%) translateY(var(--floorY)) rotateX(90deg);
+  background:
+    linear-gradient(90deg,
+      transparent calc(50% - 0.5px),
+      rgba(243, 242, 238, 0.045) calc(50% - 0.5px),
+      rgba(243, 242, 238, 0.045) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)),
+    linear-gradient(to top,
+      #2A303A 0%,
+      #1E242D 22%,
+      #141922 52%,
+      #0B0E14 100%),
+    #0B0E14;
+}
+
+/* Ceiling: darker, carries the light housings. */
+.ceiling {
+  width: var(--laneW);
+  height: var(--laneLen);
+  transform: translate(-50%, -50%) translateY(var(--ceilY)) rotateX(-90deg);
+  background: linear-gradient(to bottom, #262E3A 0%, #19202A 50%, #0E131A 100%);
+}
+
+/* Side walls: acoustic panelling suggested with a repeating gradient. */
+.wall {
+  width: var(--laneLen);
+  height: var(--laneH);
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(243, 242, 238, 0.045) 0px,
+      rgba(243, 242, 238, 0.045) 1px,
+      transparent 1px,
+      transparent 46px),
+    linear-gradient(to right, #08080A 0%, #131416 42%, #1A1B1E 100%);
+}
+
+.wallL { transform: translate(-50%, -50%) translateX(var(--wallNeg)) rotateY(90deg); }
+.wallR { transform: translate(-50%, -50%) translateX(var(--wallPos)) rotateY(-90deg); }
+
+/* ---- Depth furniture -------------------------------------------------- */
+
+/* Booth dividers: the strongest parallax cue as the camera advances. */
+.divider {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 116px;
+  margin-left: -17px;
+  margin-top: -58px;
+  background: linear-gradient(to bottom, #3A4454 0%, #222A36 68%, #131922 100%);
+  box-shadow: inset 0 1px 0 rgba(243, 242, 238, 0.09);
+}
+
+/* Overhead light housings. The emissive strip is a gradient, not a shadow. */
+.light {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 108px;
+  height: 12px;
+  margin-left: -54px;
+  background: linear-gradient(to bottom,
+    rgba(243, 242, 238, 0.90),
+    rgba(243, 242, 238, 0.42) 55%,
+    rgba(243, 242, 238, 0.05));
+  opacity: var(--lightsOn, 0);
+}
+
+/* The pool of light each housing lays on the floor beneath it. */
+.pool {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 260px;
+  height: 300px;
+  margin-left: -130px;
+  margin-top: -150px;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(243, 242, 238, 0.10), rgba(243, 242, 238, 0.03) 55%, transparent 75%);
+  opacity: var(--lightsOn, 0);
+}
+
+/* Distance markings painted across the lane floor. */
+.marker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--laneW);
+  height: 2px;
+  margin-left: calc(var(--laneW) / -2);
+  background: rgba(243, 242, 238, 0.13);
+}
+
+/* ---- Far end --------------------------------------------------------- */
+
+.backwall {
+  width: var(--laneW);
+  height: var(--laneH);
+  transform: translate(-50%, -50%) translateZ(var(--backZ));
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 46%, #1B1C1F 0%, #0E0F11 55%, #08080A 100%);
+}
+
+/* The target carrier: frame, hanger and the paper face. */
+.targetRig {
+  position: absolute;
+  left: 50%;
+  /* Sits on the perspective origin (50% 46%), not on the geometric centre of
+     the stage. Any offset between the two is multiplied by the perspective
+     scale, so a rig centred at 50% would slide down the frame as the camera
+     closed in and pull the bullseye off the portal. */
+  top: 46%;
+  width: 190px;
+  height: 230px;
+  margin-left: -95px;
+  /* Centred on the perspective origin, not on the box. This keeps the
+     bullseye pinned to the exact point the portal opens from, so the target
+     centre does not drift down the frame as the camera closes on it. */
+  margin-top: -115px;
+  transform: translateZ(var(--targetZ));
+}
+
+.hanger {
+  position: absolute;
+  left: 50%;
+  top: -46px;
+  width: 2px;
+  height: 46px;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, rgba(243, 242, 238, 0.05), rgba(243, 242, 238, 0.34));
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  padding: 9px;
+  background: linear-gradient(160deg, #2A2C30 0%, #17181B 100%);
+  box-shadow: inset 0 0 0 1px rgba(243, 242, 238, 0.10);
+}
+
+/* Paper face. The fibre texture is procedural, not an image. */
+.paper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(102deg,
+      rgba(0, 0, 0, 0.026) 0px, rgba(0, 0, 0, 0.026) 0.5px, transparent 0.5px, transparent 2px),
+    repeating-linear-gradient(6deg,
+      rgba(0, 0, 0, 0.018) 0px, rgba(0, 0, 0, 0.018) 0.5px, transparent 0.5px, transparent 2.5px),
+    radial-gradient(ellipse 80% 80% at 42% 34%, #F3F2EE 0%, #DAD7CF 62%, #B9B4A9 100%);
+  display: grid;
+  place-items: center;
+}
+
+.paperRings {
+  width: 84%;
+  height: 84%;
+  --ring-color: #17181B;
+  --bull-color: #17181B;
+}
+
+/* ---- Atmosphere ------------------------------------------------------- */
+
+/* Screen-space haze between the camera and the far end. */
+.haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 22% at 50% 46%,
+      rgba(200, 220, 245, 0.20) 0%,
+      rgba(120, 160, 210, 0.08) 45%,
+      transparent 72%);
+  opacity: var(--lightsOn, 0);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 92% 74% at 50% 46%, transparent 44%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(to bottom,
+      rgba(6, 8, 12, 0.55) 0%, transparent 20%,
+      transparent 52%, rgba(6, 8, 12, 0.92) 100%);
+}
+
+/* ---- Hero type -------------------------------------------------------- */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--gutter) calc(env(safe-area-inset-bottom, 0px) + 158px);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.eyebrow { margin-block-end: 18px; }
+
+.wordmark {
+  color: var(--bone);
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.55);
+}
+
+.support {
+  margin-block-start: 16px;
+  max-inline-size: 27ch;
+  color: rgba(243, 242, 238, 0.62);
+  font-size: var(--t-small);
+}
+
+/* ---- Scroll cue ------------------------------------------------------- */
+
+.cue {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.cueLabel {
+  font-size: var(--t-label);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(243, 242, 238, 0.5);
+  font-weight: 600;
+}
+:global(html[lang="ar"]) .cueLabel { letter-spacing: 0.06em; text-transform: none; }
+
+.cueTrack {
+  position: relative;
+  width: 1px;
+  height: 44px;
+  background: rgba(243, 242, 238, 0.16);
+  overflow: hidden;
+}
+
+.cueBead {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 14px;
+  background: linear-gradient(to bottom, transparent, var(--accent));
+  animation: bead 2.3s var(--ease-inout) infinite;
+}
+
+@keyframes bead {
+  0%   { transform: translateY(-100%); }
+  55%  { transform: translateY(320%); }
+  100% { transform: translateY(320%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cueBead { animation: none; transform: translateY(60%); }
+}
+
+/* ---- Transition portal ------------------------------------------------ */
+
+/* The bullseye becomes the doorway. This layer carries the ground of the next
+   section and is uncovered by a circle expanding from the centre of the
+   target, so the two sections are never separated by a cut. */
+.portal {
+  position: absolute;
+  inset: 0;
+  clip-path: circle(var(--portalR, 0%) at 50% 46%);
+  will-change: clip-path;
+  pointer-events: none;
+}
+
+/* Rings sweeping past the viewport edge as the portal opens. */
+.portalRings {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 130svh;
+  height: 130svh;
+  margin-left: -65svh;
+  margin-top: -65svh;
+  pointer-events: none;
+  --ring-color: var(--sand);
+  opacity: var(--ringsOpacity, 0);
+  transform: scale(var(--ringsScale, 0.06));
+  will-change: transform, opacity;
+}
+
+/* The photograph mounted at the far end of the lane. */
+.backwallPhoto {
+  position: absolute;
+  inset: 0;
+}

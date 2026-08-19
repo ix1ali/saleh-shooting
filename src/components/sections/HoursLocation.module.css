@@ -1,0 +1,210 @@
+/* =========================================================================
+   VISIT — hours and location.
+   Motion idea: the mechanical one. Digits roll into place like a range
+   scoreboard settling, the separating rules grow outward from the leading
+   edge, and the address reveals line by line. A utility section, but it
+   still has to earn its place on the page.
+   ====================================================================== */
+
+.section {
+  position: relative;
+  padding-block: 16svh 12svh;
+  padding-inline: var(--gutter);
+  background: var(--ink);
+  overflow: hidden;
+}
+
+/* Faint lane rules running the height of the section. */
+.grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(90deg,
+    rgba(243, 242, 238, 0.045) 0px,
+    rgba(243, 242, 238, 0.045) 1px,
+    transparent 1px,
+    transparent 68px);
+  opacity: 0.7;
+}
+
+.content { position: relative; }
+
+/* ---- Status ------------------------------------------------------------- */
+
+.status {
+  margin-block-start: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-block-size: 30px;
+}
+
+.statusDot {
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: var(--sand-dim);
+  transition: background-color 0.5s var(--ease-out);
+}
+
+.status[data-open="true"] .statusDot {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.statusText {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+:global(html[lang="ar"]) .statusText {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.statusMeta {
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+  margin-inline-start: auto;
+  direction: ltr;
+}
+:global(html[lang="ar"]) .statusMeta { letter-spacing: 0.04em; text-transform: none; }
+
+/* ---- Hours table --------------------------------------------------------- */
+
+.blocks { margin-block-start: 38px; }
+
+.block {
+  padding-block: 22px;
+  border-block-start: 1px solid var(--rule);
+}
+.block:last-child { border-block-end: 1px solid var(--rule); }
+
+.blockHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-end: 14px;
+}
+
+.blockLabel {
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sand);
+}
+:global(html[lang="ar"]) .blockLabel { letter-spacing: 0.04em; text-transform: none; }
+
+.blockToday {
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+:global(html[lang="ar"]) .blockToday { letter-spacing: 0.04em; text-transform: none; }
+
+.times {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  direction: ltr;
+}
+
+.timeDash {
+  inline-size: 26px;
+  block-size: 1px;
+  background: var(--rule-strong);
+  transform-origin: left center;
+  flex: 0 0 auto;
+}
+
+.time { color: var(--bone); }
+
+/* ---- Location ------------------------------------------------------------ */
+
+.location {
+  margin-block-start: 46px;
+}
+
+.addressLines {
+  margin-block-start: 18px;
+  font-size: var(--t-md);
+  font-weight: 500;
+  line-height: 1.34;
+  color: var(--bone);
+}
+
+.addressLine {
+  display: block;
+  overflow: hidden;
+  padding-block-end: 0.06em;
+  margin-block-end: -0.06em;
+}
+.addressLine > span { display: block; will-change: transform; }
+
+.mapsLabel {
+  margin-block-start: 14px;
+  font-size: var(--t-small);
+  color: var(--sand-dim);
+}
+
+/* ---- Map plate ----------------------------------------------------------- */
+
+/* A drawn plate, not an embedded map: it stays on-palette, costs nothing to
+   load, and hands off to the real maps app on tap. */
+.map {
+  position: relative;
+  display: block;
+  margin-block-start: 26px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #121316, #0A0B0C);
+  border: 1px solid var(--rule);
+  will-change: transform;
+  transition: transform 0.3s var(--ease-out);
+}
+.map:active { transform: scale(0.985); }
+
+.mapSvg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.mapRoad { stroke: rgba(243, 242, 238, 0.14); stroke-width: 1; }
+.mapRoadMain { stroke: rgba(243, 242, 238, 0.26); stroke-width: 1.6; }
+
+.mapPin {
+  position: absolute;
+  inset-block-start: 46%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  inline-size: 74px;
+  block-size: 74px;
+  --ring-color: var(--accent);
+  --bull-color: var(--accent);
+}
+:global(html[dir="rtl"]) .mapPin { translate: 50% -50%; }
+
+.mapCta {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(to top, rgba(8, 8, 10, 0.94), transparent);
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone);
+  font-weight: 600;
+}
+:global(html[lang="ar"]) .mapCta { letter-spacing: 0.04em; text-transform: none; }
+
+:global(html[dir="rtl"]) .mapCta svg { transform: scaleX(-1); }

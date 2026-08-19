@@ -1,0 +1,26 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.rule {
+  flex: 0 0 auto;
+  inline-size: 28px;
+  block-size: 1px;
+  background: var(--rule-strong);
+  transform-origin: left center;
+  will-change: transform;
+}
+:global(html[dir="rtl"]) .rule { transform-origin: right center; }
+
+.text {
+  display: block;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.wrap[data-tone="accent"] .text { color: var(--accent); }
+.wrap[data-tone="accent"] .rule { background: var(--accent); }
+.wrap[data-tone="bone"] .text  { color: var(--bone); }

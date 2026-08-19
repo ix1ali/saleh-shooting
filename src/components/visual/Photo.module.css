@@ -1,0 +1,50 @@
+.wrap {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  background: var(--void);
+}
+
+.img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  /* Source material is phone photography from a mixed-lighting interior. A
+     light unify pass pulls it onto the palette without draining the life out
+     of it: slight desaturation, a touch more contrast, no crushing. */
+  filter: saturate(0.88) contrast(1.06) brightness(0.97);
+}
+
+.grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Tonal ramps only at the edges, so the middle of the frame — where the
+   subject is — stays clean. Type sits in the ramps, never over the subject. */
+.wrap[data-grade="soft"] .grade {
+  background:
+    linear-gradient(to bottom,
+      rgba(6, 8, 12, 0.34) 0%, transparent 26%,
+      transparent 72%, rgba(6, 8, 12, 0.52) 100%);
+}
+
+.wrap[data-grade="medium"] .grade {
+  background:
+    linear-gradient(to bottom,
+      rgba(6, 8, 12, 0.52) 0%, transparent 28%,
+      transparent 58%, rgba(6, 8, 12, 0.88) 100%),
+    linear-gradient(to top right, rgba(13, 45, 96, 0.20), transparent 60%);
+}
+
+.wrap[data-grade="heavy"] .grade {
+  background:
+    linear-gradient(to bottom,
+      rgba(6, 8, 12, 0.72) 0%, rgba(6, 8, 12, 0.32) 34%,
+      rgba(6, 8, 12, 0.55) 70%, rgba(6, 8, 12, 0.95) 100%),
+    linear-gradient(to top right, rgba(13, 45, 96, 0.28), transparent 62%);
+}
+
+.wrap[data-grade="none"] .grade { background: none; }

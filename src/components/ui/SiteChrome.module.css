@@ -1,0 +1,376 @@
+/* =========================================================================
+   SITE CHROME — nav bar, menu overlay, scroll progress, quick actions.
+   All of it is fixed to the phone column rather than the browser viewport,
+   so the layout holds when the site is viewed on a wider screen.
+   ====================================================================== */
+
+/* ---- Top bar ------------------------------------------------------------ */
+
+.bar {
+  z-index: var(--z-nav);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) var(--gutter) 14px;
+  will-change: transform, opacity;
+}
+
+/* A wash behind the bar. Section copy scrolls underneath it, so this has to
+   actually separate the two — a light gradient left headlines colliding with
+   the wordmark. It extends below the bar box so the ramp has room to finish. */
+.barVeil {
+  position: absolute;
+  inset: 0 0 -30px 0;
+  background: linear-gradient(to bottom,
+    rgba(6, 8, 12, 0.98) 0%,
+    rgba(6, 8, 12, 0.97) 55%,
+    rgba(6, 8, 12, 0.72) 76%,
+    transparent 100%);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  /* Mask the blur to the same ramp, so it does not cut off with a hard edge. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.brandLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1;
+}
+
+.brandMark { inline-size: 22px; block-size: 22px; }
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+:global(html[lang="ar"]) .brandName {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.82rem;
+}
+
+.barRight {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 1;
+}
+
+.langBtn {
+  padding: 8px 10px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--sand);
+  border: 1px solid var(--rule);
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.langBtn:active { color: var(--bone); border-color: var(--rule-strong); }
+
+/* ---- Menu button -------------------------------------------------------- */
+
+.menuBtn {
+  position: relative;
+  inline-size: 42px;
+  block-size: 42px;
+  display: grid;
+  place-items: center;
+}
+
+/* Rings that expand out of the button as the overlay opens. */
+.menuRings {
+  position: absolute;
+  inset: -6px;
+  --ring-color: var(--accent);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out);
+  pointer-events: none;
+}
+.menuBtn[data-open="true"] .menuRings { opacity: 0.5; transform: scale(1); }
+
+.menuBars {
+  position: relative;
+  inline-size: 20px;
+  block-size: 12px;
+}
+
+.menuBar {
+  position: absolute;
+  inset-inline: 0;
+  block-size: 1.5px;
+  background: var(--bone);
+  transition: transform 0.45s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+.menuBar:nth-child(1) { inset-block-start: 0; }
+.menuBar:nth-child(2) { inset-block-end: 0; inline-size: 68%; }
+
+.menuBtn[data-open="true"] .menuBar:nth-child(1) { transform: translateY(5.25px) rotate(45deg); }
+.menuBtn[data-open="true"] .menuBar:nth-child(2) { transform: translateY(-5.25px) rotate(-45deg); inline-size: 100%; }
+
+/* ---- Menu overlay -------------------------------------------------------- */
+
+.overlay {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  inline-size: 100%;
+  max-inline-size: var(--shell-w);
+  transform: translateX(-50%);
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 var(--gutter);
+  background: var(--void);
+  visibility: hidden;
+  /* Opened by scaling a circle out of the menu button, which is why the
+     button carries expanding rings: the two read as one gesture. */
+  clip-path: circle(0% at calc(100% - 42px) 48px);
+  will-change: clip-path;
+}
+:global(html[dir="rtl"]) .overlay {
+  transform: translateX(50%);
+  clip-path: circle(0% at 42px 48px);
+}
+
+.overlay[data-open="true"] { visibility: visible; }
+
+.overlayGround { position: absolute; inset: 0; opacity: 0.5; }
+
+.navList {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.navRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-block: 14px;
+  border-block-end: 1px solid rgba(243, 242, 238, 0.08);
+  inline-size: 100%;
+  text-align: start;
+  will-change: transform, opacity;
+}
+
+.navIndex {
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--sand-dim);
+  flex: 0 0 auto;
+  direction: ltr;
+  transition: color 0.35s var(--ease-out);
+}
+
+.navLabelMask {
+  display: block;
+  overflow: hidden;
+  padding-block-end: 0.08em;
+  margin-block-end: -0.08em;
+}
+
+.navLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--bone);
+  transition: transform 0.45s var(--ease-out), color 0.35s var(--ease-out);
+}
+:global(html[lang="ar"]) .navLabel {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.navRow:active .navLabel { color: var(--accent); transform: translateX(8px); }
+.navRow:active .navIndex { color: var(--accent); }
+:global(html[dir="rtl"]) .navRow:active .navLabel { transform: translateX(-8px); }
+
+.overlayFoot {
+  position: relative;
+  margin-block-start: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+  will-change: transform, opacity;
+}
+:global(html[lang="ar"]) .overlayFoot { letter-spacing: 0.04em; text-transform: none; }
+
+/* ---- Scroll progress ------------------------------------------------------ */
+
+/* A range marking down the trailing edge: chapter number over a hairline that
+   fills as the section is read. */
+.progress {
+  position: fixed;
+  inset-block-start: 50%;
+  inset-inline-end: 0;
+  translate: 0 -50%;
+  z-index: var(--z-ui);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-inline: 9px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+}
+.progress[data-visible="true"] { opacity: 1; }
+
+.progressNums {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  /* No tracking here: the figures sit in a 24px rail and the extra letter
+     spacing pushed the second digit outside it. */
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  text-shadow: 0 1px 6px rgba(6, 8, 12, 0.9);
+}
+
+.progressCurrent {
+  display: block;
+  overflow: hidden;
+  block-size: 1em;
+  color: var(--bone);
+}
+.progressCurrent > span { display: block; will-change: transform; }
+
+.progressTotal { color: var(--sand-dim); }
+
+.progressTrack {
+  inline-size: 1px;
+  block-size: 84px;
+  background: rgba(243, 242, 238, 0.16);
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 100%;
+  background: var(--accent);
+  transform-origin: top center;
+  transform: scaleY(var(--p, 0));
+}
+
+/* ---- Quick actions -------------------------------------------------------- */
+
+.quick {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline-start: 50%;
+  inline-size: 100%;
+  max-inline-size: var(--shell-w);
+  transform: translateX(-50%);
+  z-index: var(--z-ui);
+  padding: 12px var(--gutter) calc(env(safe-area-inset-bottom, 0px) + 12px);
+  display: flex;
+  gap: 8px;
+  background: linear-gradient(to top, rgba(8, 8, 10, 0.96) 55%, transparent);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+:global(html[dir="rtl"]) .quick { transform: translateX(50%); }
+
+.quick > * { pointer-events: auto; }
+
+.quickPrimary {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 18px;
+  background: var(--accent);
+  color: var(--bone);
+  font-size: var(--t-small);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: transform 0.25s var(--ease-out);
+}
+.quickPrimary:active { transform: scale(0.972); }
+:global(html[lang="ar"]) .quickPrimary { letter-spacing: 0; text-transform: none; }
+
+.quickSecondary {
+  flex: 0 0 auto;
+  inline-size: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(243, 242, 238, 0.16);
+  background: rgba(16, 16, 16, 0.9);
+  color: var(--bone);
+  transition: transform 0.25s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.quickSecondary:active { transform: scale(0.95); border-color: var(--rule-strong); }
+.quickSecondary svg { inline-size: 19px; block-size: 19px; }
+
+.actionIcon { inline-size: 18px; block-size: 18px; opacity: 0.9; }
+
+/* ---- Loader ---------------------------------------------------------------- */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  display: grid;
+  place-items: center;
+  background: var(--void);
+  will-change: opacity;
+}
+
+.loaderRing {
+  inline-size: 96px;
+  block-size: 96px;
+  --ring-color: var(--sand);
+  --bull-color: var(--accent);
+  will-change: transform;
+}
+
+.loaderLabel {
+  position: absolute;
+  inset-block-end: 16%;
+  inset-inline: 0;
+  text-align: center;
+  font-size: var(--t-label);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+  will-change: opacity;
+}
+:global(html[lang="ar"]) .loaderLabel { letter-spacing: 0.06em; text-transform: none; }

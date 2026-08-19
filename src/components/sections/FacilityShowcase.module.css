@@ -1,0 +1,185 @@
+/* =========================================================================
+   FACILITY — a vertical film strip.
+   Motion idea: frames do not sit in a grid. Each one enters full-bleed, is
+   squeezed by its own scroll progress into a narrower band as it rises, and
+   is overtaken by the next. Captions travel independently of their frames,
+   so the type and the image never move as one block.
+   ====================================================================== */
+
+.section {
+  position: relative;
+  background: var(--ink);
+  /* Bottom padding clears the sticky action bar plus the trailing caption,
+     which hangs below its frame. */
+  padding-block: 16svh 18svh;
+  overflow: hidden;
+}
+
+.head {
+  padding-inline: var(--gutter);
+  margin-block-end: 34px;
+}
+
+.heading { margin-block-start: 20px; }
+
+.strip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8svh;
+}
+
+/* ---- Frame ------------------------------------------------------------ */
+
+.frame {
+  position: relative;
+  /* Frames alternate their inline offset so the strip reads as a hand-laid
+     contact sheet rather than a stack of identical rectangles. */
+  inline-size: 84%;
+  aspect-ratio: 3 / 4;
+}
+
+.frame:nth-child(odd)  { margin-inline-start: var(--gutter); }
+.frame:nth-child(even) { margin-inline-start: auto; margin-inline-end: var(--gutter); }
+
+.frame:nth-child(2) { inline-size: 68%; aspect-ratio: 1 / 1; }
+.frame:nth-child(3) { inline-size: 92%; aspect-ratio: 4 / 5; }
+.frame:nth-child(4) { inline-size: 74%; aspect-ratio: 3 / 4; }
+
+.window {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: clip-path;
+}
+
+.media {
+  position: absolute;
+  /* Oversized so the inner parallax never exposes an edge. */
+  inset: -12% 0;
+  will-change: transform;
+}
+
+/* ---- Caption ----------------------------------------------------------- */
+
+.caption {
+  position: absolute;
+  inset-block-end: -22px;
+  inset-inline-start: -6px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.frame:nth-child(even) .caption {
+  inset-inline-start: auto;
+  inset-inline-end: -6px;
+  flex-direction: row-reverse;
+}
+
+.capIndex {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  direction: ltr;
+}
+
+.capText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.capTitle {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+:global(html[lang="ar"]) .capTitle {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.capMeta {
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+}
+:global(html[lang="ar"]) .capMeta { letter-spacing: 0.04em; text-transform: none; }
+
+/* ---- Facility artwork -------------------------------------------------- */
+
+.art {
+  position: absolute;
+  inset: 0;
+  background: var(--void);
+}
+
+.artLane {
+  background:
+    linear-gradient(178deg, transparent 46%, rgba(243, 242, 238, 0.05) 46.4%, transparent 47%),
+    radial-gradient(ellipse 70% 40% at 50% 104%, rgba(184, 173, 156, 0.20), transparent 62%),
+    linear-gradient(to bottom, #0A0B0C 0%, #16171A 58%, #0B0C0D 100%);
+}
+
+.artDownrange {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(58, 123, 213, 0.20) 0%, transparent 26%),
+    radial-gradient(ellipse 60% 50% at 50% 44%, rgba(243, 242, 238, 0.10), transparent 60%),
+    linear-gradient(to bottom, #08090A 0%, #121316 62%, #08080A 100%);
+}
+
+.artBench {
+  background:
+    linear-gradient(to bottom, transparent 62%, rgba(36, 38, 41, 0.9) 62.5%, #1A1B1E 100%),
+    radial-gradient(ellipse 80% 40% at 50% 30%, rgba(243, 242, 238, 0.10), transparent 64%),
+    linear-gradient(to bottom, #0B0C0E, #121316);
+}
+
+.artScore {
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(243, 242, 238, 0.05) 0px, rgba(243, 242, 238, 0.05) 1px, transparent 1px, transparent 26px),
+    radial-gradient(ellipse 55% 45% at 50% 50%, rgba(184, 173, 156, 0.14), transparent 66%),
+    linear-gradient(to bottom, #0A0B0C, #141518);
+}
+
+/* A ring motif inside each frame, cropped by the frame edge. */
+.artRing {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  inline-size: 62%;
+  aspect-ratio: 1;
+  opacity: 0.4;
+  --ring-color: rgba(243, 242, 238, 0.5);
+}
+:global(html[dir="rtl"]) .artRing { translate: 50% -50%; }
+
+.artGrade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(8, 8, 10, 0.42) 0%, transparent 34%, transparent 60%, rgba(8, 8, 10, 0.72) 100%);
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.12) brightness(0.92);
+}

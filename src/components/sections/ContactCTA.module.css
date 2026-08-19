@@ -1,0 +1,198 @@
+/* =========================================================================
+   CONTACT — the climax, not a footer.
+   Motion idea: the previous section is compressed and pushed back while this
+   panel rises over it from the bottom edge. The heading closes its tracking
+   rather than sliding, the actions stagger in, and the brand mark lands last
+   so the page finishes on the logo instead of trailing off.
+   ====================================================================== */
+
+.outer {
+  position: relative;
+  background: var(--void);
+}
+
+.section {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 16svh calc(env(safe-area-inset-bottom, 0px) + 132px);
+  padding-inline: var(--gutter);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.ground {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 100% 50% at 50% 112%, rgba(58, 123, 213, 0.20), transparent 62%),
+    radial-gradient(ellipse 80% 40% at 50% -6%, rgba(184, 173, 156, 0.08), transparent 60%),
+    linear-gradient(to bottom, #08080A 0%, #101010 46%, #08080A 100%);
+}
+
+/* Rings resolving behind the sign-off — the motif closing the site the same
+   way it opened it. */
+.rings {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  inline-size: 148%;
+  aspect-ratio: 1;
+  --ring-color: var(--sand);
+  opacity: 0.10;
+  pointer-events: none;
+  will-change: transform;
+}
+:global(html[dir="rtl"]) .rings { translate: 50% -50%; }
+
+.content { position: relative; }
+
+.headingWrap { margin-block-start: 26px; }
+
+.headingLine + .headingLine { margin-block-start: -0.04em; }
+
+/* The accent lands on the final line so the eye finishes on the promise. */
+.headingWrap > :last-child span { color: var(--accent); }
+
+.copy {
+  margin-block-start: 26px;
+  max-inline-size: 32ch;
+}
+
+/* ---- Actions ------------------------------------------------------------ */
+
+.actions {
+  margin-block-start: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 19px 20px;
+  overflow: hidden;
+  color: var(--bone);
+  font-size: var(--t-body);
+  font-weight: 600;
+  background: rgba(243, 242, 238, 0.045);
+  border: 1px solid rgba(243, 242, 238, 0.12);
+  will-change: transform, opacity;
+  transition: border-color 0.35s var(--ease-out);
+}
+
+.action:active { transform: scale(0.984); }
+.action:active { border-color: var(--rule-strong); }
+
+/* Primary action carries the accent as a fill rather than an outline. */
+.action[data-primary="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.actionIcon {
+  flex: 0 0 auto;
+  inline-size: 20px;
+  block-size: 20px;
+  opacity: 0.85;
+}
+
+.actionLabel { flex: 1 1 auto; }
+
+.actionArrow {
+  flex: 0 0 auto;
+  transition: transform 0.35s var(--ease-out);
+}
+.action:active .actionArrow { transform: translateX(5px); }
+:global(html[dir="rtl"]) .actionArrow { transform: scaleX(-1); }
+:global(html[dir="rtl"]) .action:active .actionArrow { transform: scaleX(-1) translateX(5px); }
+
+/* ---- Sign-off ------------------------------------------------------------ */
+
+.signoff {
+  position: relative;
+  margin-block-start: 54px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  will-change: transform, opacity;
+}
+
+.mark {
+  flex: 0 0 auto;
+  inline-size: 42px;
+  block-size: 42px;
+  opacity: 0.9;
+}
+
+.signText { display: flex; flex-direction: column; gap: 3px; }
+
+.signName {
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+:global(html[lang="ar"]) .signName {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.signHandle {
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  color: var(--sand-dim);
+  direction: ltr;
+}
+
+.closing {
+  position: relative;
+  margin-block-start: 30px;
+  font-size: var(--t-small);
+  color: var(--sand-dim);
+  will-change: transform, opacity;
+}
+
+/* ---- Legal line ---------------------------------------------------------- */
+
+.legal {
+  position: relative;
+  margin-block-start: 36px;
+  padding-block-start: 18px;
+  border-block-start: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legalItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.legalDays {
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  color: rgba(184, 173, 156, 0.55);
+}
+:global(html[lang="ar"]) .legalDays { letter-spacing: 0.02em; }
+
+.legalTime {
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--bone);
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}

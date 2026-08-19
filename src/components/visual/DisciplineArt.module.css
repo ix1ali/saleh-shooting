@@ -1,0 +1,102 @@
+/* Brand-graded artwork for a discipline panel. Every composition sits on the
+   same ground and under the same grade layer, so panels read as one campaign
+   whether they carry procedural artwork or a real photograph. */
+
+.art {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  background: var(--void);
+}
+
+/* Environmental field behind the geometry — the range, abstracted. */
+.field {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 118%,
+      rgba(184, 173, 156, 0.15) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 46% at 50% -12%,
+      rgba(243, 242, 238, 0.08) 0%, transparent 58%),
+    linear-gradient(to bottom, #0C0D0F 0%, #141518 46%, #0A0A0C 100%);
+}
+
+.art[data-visual="archery"] .field {
+  background:
+    radial-gradient(ellipse 90% 55% at 22% 108%,
+      rgba(58, 123, 213, 0.14) 0%, transparent 60%),
+    linear-gradient(to bottom, #0A0B0D 0%, #131417 50%, #08080A 100%);
+}
+
+.art[data-visual="shotgun"] .field {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 88%,
+      rgba(58, 123, 213, 0.10) 0%, transparent 58%),
+    linear-gradient(to bottom, #0B0C0E 0%, #16171A 52%, #09090B 100%);
+}
+
+/* ---- Geometry --------------------------------------------------------- */
+
+.geo {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  /* Compositions are drawn on a 200x300 field and cover whatever box they
+     are given, so a panel can be any aspect without distorting the drawing. */
+  object-fit: cover;
+}
+
+.ringWide { stroke: rgba(243, 242, 238, 0.20); stroke-width: 1; }
+.ringMid  { stroke: rgba(243, 242, 238, 0.42); stroke-width: 1.2; }
+.bull     { fill: var(--accent); }
+
+.hits circle { fill: rgba(243, 242, 238, 0.82); }
+
+.sight { stroke: rgba(243, 242, 238, 0.16); stroke-width: 0.8; }
+.lane  { stroke: rgba(243, 242, 238, 0.22); stroke-width: 1; }
+.mark  { stroke: rgba(243, 242, 238, 0.16); stroke-width: 0.8; }
+
+.tick {
+  fill: rgba(184, 173, 156, 0.55);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  font-family: var(--font-display);
+}
+
+.bow    { stroke: var(--sand); stroke-width: 2; stroke-linecap: round; }
+.string { stroke: rgba(243, 242, 238, 0.34); stroke-width: 0.8; }
+.arrow  { stroke: var(--accent); stroke-width: 1.4; stroke-linecap: round; }
+.fletch { stroke: var(--sand); stroke-width: 1.2; stroke-linecap: round; }
+
+/* ---- Photograph path --------------------------------------------------- */
+
+.photo {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* The grade is what keeps incoming Instagram photography on-palette: it pulls
+   contrast up, drains a little saturation, warms the mids and deepens the
+   blacks, so no stray colour cast survives into the layout. */
+.art[data-photo="true"] .photo {
+  filter: saturate(0.72) contrast(1.12) brightness(0.92);
+}
+
+.grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      rgba(8, 8, 10, 0.55) 0%,
+      rgba(8, 8, 10, 0.05) 30%,
+      rgba(8, 8, 10, 0.18) 62%,
+      rgba(8, 8, 10, 0.88) 100%),
+    linear-gradient(to top right, rgba(58, 123, 213, 0.07), transparent 55%);
+}

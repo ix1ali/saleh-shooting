@@ -1,0 +1,271 @@
+/* =========================================================================
+   SHOOTINGQ8 — GLOBAL DESIGN SYSTEM
+   Mobile-first. All spacing/positioning uses logical properties so the
+   Arabic (RTL) layout mirrors correctly without a second stylesheet.
+   ====================================================================== */
+
+/* =========================================================================
+   TYPED CUSTOM PROPERTIES
+   The scroll timelines write to these dozens of times a second. Registering
+   them tells the browser they are numbers rather than arbitrary tokens, which
+   keeps updates on the fast path and stops an unparsable intermediate value
+   from ever reaching the compositor.
+   ====================================================================== */
+
+@property --camN     { syntax: "<number>";     inherits: true;  initial-value: 0; }
+@property --sceneOn  { syntax: "<number>";     inherits: true;  initial-value: 1; }
+@property --lightsOn { syntax: "<number>";     inherits: true;  initial-value: 1; }
+@property --portalR  { syntax: "<percentage>"; inherits: true;  initial-value: 0%; }
+@property --ringsOpacity { syntax: "<number>"; inherits: true;  initial-value: 0; }
+@property --ringsScale   { syntax: "<number>"; inherits: true;  initial-value: 0.06; }
+@property --draw     { syntax: "<number>";     inherits: true;  initial-value: 0; }
+@property --p        { syntax: "<number>";     inherits: false; initial-value: 0; }
+@property --progress { syntax: "<number>";     inherits: false; initial-value: 0; }
+
+:root {
+  /* ---- Surface -----------------------------------------------------
+     Near-blacks carry a slight navy cast so the page sits in the same family
+     as the brand blue sampled from the official Instagram artwork. */
+  --void:        #06080C;
+  --ink:         #0B0E14;
+  --charcoal:    #101620;
+  --gunmetal:    #1B2432;
+  --steel:       #2C3746;
+
+  /* ---- Light ------------------------------------------------------ */
+  --bone:        #F3F2EE;
+  --sand:        #B8AD9C;
+  --sand-dim:    #7C7466;
+
+  /* ---- Accent ------------------------------------------------------
+     Sampled from the official Instagram artwork: a deep navy (#0D2D60) and a
+     teal (#0A627E). Neither is legible as an accent on a near-black page, so
+     the working accent is a lifted member of the same family, with the true
+     brand navy kept for surfaces and fills. */
+  --accent:       #3D9BD4;
+  --accent-soft:  #14568C;
+  --accent-deep:  #0D2D60;
+  --accent-teal:  #0A627E;
+  --accent-glow:  rgba(61, 155, 212, 0.28);
+
+  /* ---- Semantic --------------------------------------------------- */
+  --bg:          var(--ink);
+  --fg:          var(--bone);
+  --muted:       var(--sand);
+  --rule:        rgba(243, 242, 238, 0.14);
+  --rule-strong: rgba(243, 242, 238, 0.30);
+
+  /* ---- Layout ----------------------------------------------------- */
+  --shell-w:     430px;
+  --gutter:      clamp(20px, 6.2vw, 26px);
+  --vh:          100svh;
+
+  /* ---- Type ------------------------------------------------------- */
+  --font-display: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-body:    var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-arabic:  var(--font-plex-ar), "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono:    ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Display sizes are capped so the 430px shell governs on large screens */
+  /* Sized so the longest display word (PRECISION) still fits between the
+     gutters at 375px, where the line masks would otherwise clip it. */
+  --t-mega:   clamp(2.8rem, 15.6vw, 4.25rem);
+  /* Sized against the longest xl line on the site ("STARTS HERE") so it
+     never exceeds the column at 375px or at the 430px cap. */
+  --t-xl:     clamp(2.4rem, 12.8vw, 3.4rem);
+  --t-lg:     clamp(1.9rem, 9.6vw, 2.6rem);
+  --t-md:     clamp(1.35rem, 6.4vw, 1.72rem);
+  --t-body:   clamp(0.95rem, 4.05vw, 1.09rem);
+  --t-small:  clamp(0.82rem, 3.4vw, 0.92rem);
+  --t-label:  clamp(0.62rem, 2.75vw, 0.74rem);
+
+  /* ---- Motion ----------------------------------------------------- */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-soft:  cubic-bezier(0.33, 1, 0.68, 1);
+
+  --z-scene: 1;
+  --z-ui: 60;
+  --z-nav: 80;
+  --z-menu: 90;
+  --z-loader: 100;
+}
+
+/* ---- Reset --------------------------------------------------------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; padding: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: auto;
+  background: var(--void);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  overscroll-behavior-y: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* Arabic locale swaps the family across the whole document */
+html[lang="ar"] body { font-family: var(--font-arabic); }
+html[lang="ar"] { --t-mega: clamp(2.7rem, 15vw, 4rem); }
+
+img, svg, video, canvas { display: block; max-width: 100%; }
+img, video { height: auto; }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { cursor: pointer; touch-action: manipulation; }
+
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection { background: var(--accent); color: var(--bone); }
+
+/* ---- App shell ------------------------------------------------------ */
+/* This site is designed for phones. On wider screens it is presented as a
+   deliberate centred phone column rather than a stretched desktop layout. */
+
+.shell {
+  position: relative;
+  width: 100%;
+  max-width: var(--shell-w);
+  margin-inline: auto;
+  overflow-x: clip;
+  background: var(--bg);
+}
+
+@media (min-width: 560px) {
+  html { background: #050506; }
+  body { background: #050506; }
+  .shell {
+    box-shadow: 0 0 0 1px rgba(243, 242, 238, 0.07), 0 40px 120px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Fixed UI must align to the shell column, not the browser viewport. */
+.fixed-shell {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 50%;
+  width: 100%;
+  max-width: var(--shell-w);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+html[dir="rtl"] .fixed-shell { transform: translateX(50%); }
+.fixed-shell > * { pointer-events: auto; }
+
+/* ---- Typographic primitives ----------------------------------------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+html[lang="ar"] .display {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.18;
+  font-weight: 700;
+}
+
+.label {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--sand);
+}
+html[lang="ar"] .label { letter-spacing: 0.06em; text-transform: none; }
+
+.body-copy {
+  font-size: var(--t-body);
+  line-height: 1.62;
+  color: rgba(243, 242, 238, 0.72);
+  font-weight: 400;
+}
+html[lang="ar"] .body-copy { line-height: 1.85; }
+
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.02em;
+}
+
+/* ---- Line-mask reveal primitive -------------------------------------- */
+
+.maskLine { overflow: hidden; display: block; }
+.maskLine > span {
+  display: block;
+  will-change: transform;
+}
+
+/* ---- Utility --------------------------------------------------------- */
+
+.section {
+  position: relative;
+  padding-inline: var(--gutter);
+}
+
+.vh-full { min-height: var(--vh); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Hairline rule that can be scrubbed via --p (0 -> 1) */
+.rule-grow {
+  block-size: 1px;
+  inline-size: 100%;
+  background: var(--rule-strong);
+  transform-origin: inset-inline-start center;
+  transform: scaleX(var(--p, 0));
+}
+
+/* ---- Reduced motion --------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.12s !important;
+    scroll-behavior: auto !important;
+  }
+}

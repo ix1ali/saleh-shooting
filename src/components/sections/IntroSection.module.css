@@ -1,0 +1,106 @@
+/* =========================================================================
+   INTRO — the room you arrive in after passing through the bullseye.
+   Motion idea: a single editorial composition that assembles in sequence —
+   rule, then heading lines one at a time, then copy — while the ground
+   behind it settles from an over-scale and a target ring drifts across.
+   ====================================================================== */
+
+.intro {
+  position: relative;
+  min-height: 100svh;
+  padding-block: 20svh 14svh;
+  overflow: hidden;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Ground sits behind everything and drifts slower than the type. */
+.groundWrap {
+  position: absolute;
+  inset: -8% 0;
+  will-change: transform;
+}
+
+.groundScale {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* A single large ring, cropped by the frame, moving behind the type. */
+.ring {
+  position: absolute;
+  inset-inline-end: -46%;
+  inset-block-start: 6%;
+  inline-size: 118%;
+  aspect-ratio: 1;
+  --ring-color: var(--sand);
+  opacity: 0.14;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* A scrim under the type. The photograph behind is a real interior with
+   bright highlights in it, and body copy laid directly over it was not
+   comfortably readable. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      rgba(6, 8, 12, 0.86) 0%,
+      rgba(6, 8, 12, 0.62) 26%,
+      rgba(6, 8, 12, 0.72) 58%,
+      rgba(6, 8, 12, 0.94) 100%),
+    linear-gradient(to right, rgba(6, 8, 12, 0.70) 0%, transparent 78%);
+}
+
+.content {
+  position: relative;
+  padding-inline: var(--gutter);
+}
+
+.label { margin-block-end: 26px; }
+
+.heading {
+  color: var(--bone);
+}
+
+/* The third line carries the accent so the eye lands on it. */
+.heading span:last-child span { color: var(--accent); }
+
+.copy {
+  margin-block-start: 30px;
+  max-inline-size: 34ch;
+}
+
+/* ---- Stat ------------------------------------------------------------- */
+
+.stat {
+  margin-block-start: 44px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-block-start: 20px;
+  border-block-start: 1px solid var(--rule);
+}
+
+.statValue {
+  font-size: var(--t-lg);
+  font-weight: 700;
+  color: var(--bone);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+  max-inline-size: 14ch;
+  line-height: 1.4;
+}
+:global(html[lang="ar"]) .statLabel { letter-spacing: 0.04em; text-transform: none; }

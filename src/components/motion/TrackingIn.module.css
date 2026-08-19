@@ -1,0 +1,17 @@
+.wrap { display: block; }
+.wrap[data-size="mega"] { font-size: var(--t-mega); }
+.wrap[data-size="xl"]   { font-size: var(--t-xl); }
+.wrap[data-size="lg"]   { font-size: var(--t-lg); }
+
+.mask {
+  display: block;
+  overflow: hidden;
+  padding-block-end: 0.08em;
+  margin-block-end: -0.08em;
+}
+
+.track {
+  display: block;
+  white-space: nowrap;
+  will-change: transform, letter-spacing, opacity;
+}

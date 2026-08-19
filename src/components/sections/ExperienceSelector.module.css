@@ -1,0 +1,253 @@
+/* =========================================================================
+   FIND YOUR EXPERIENCE — a staged instrument, not a form.
+   Motion idea: one question occupies the frame at a time. Answering sends it
+   upward out of view and brings the next up from below, while a range-style
+   progress bar advances. The result grows out of a single ring at the centre.
+   ====================================================================== */
+
+.section {
+  position: relative;
+  min-height: 100svh;
+  padding-block: 13svh 16svh;
+  padding-inline: var(--gutter);
+  background: var(--charcoal);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.heading { margin-block-start: 22px; }
+
+/* ---- Progress --------------------------------------------------------- */
+
+.progress {
+  margin-block-start: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.track {
+  position: relative;
+  flex: 1 1 auto;
+  block-size: 2px;
+  background: rgba(243, 242, 238, 0.12);
+}
+
+.fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  background: var(--accent);
+  inline-size: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--progress, 0));
+  transition: transform 0.65s var(--ease-out);
+  will-change: transform;
+}
+:global(html[dir="rtl"]) .fill { transform-origin: right center; }
+
+.count {
+  font-family: var(--font-display);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--sand-dim);
+  direction: ltr;
+}
+
+/* ---- Stage ------------------------------------------------------------ */
+
+/* Only one stage is mounted at a time — the outgoing one finishes animating
+   before React swaps it — so the steps flow normally and the stage sizes to
+   whichever is showing. A min height keeps the shorter questions from making
+   the section jump around between steps. */
+.stage {
+  position: relative;
+  /* Sized to its content, not to the tallest possible step. A fixed minimum
+     left half a screen of dead black under the two-option question. */
+  flex: 0 0 auto;
+  min-block-size: 300px;
+  margin-block-start: 34px;
+}
+
+.step {
+  position: relative;
+  will-change: transform, opacity;
+}
+
+.prompt {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: var(--bone);
+  max-inline-size: 15ch;
+  margin-block-end: 30px;
+}
+:global(html[lang="ar"]) .prompt {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  inline-size: 100%;
+  padding: 17px 18px;
+  text-align: start;
+  color: var(--bone);
+  font-size: var(--t-body);
+  font-weight: 500;
+  background: rgba(243, 242, 238, 0.035);
+  border: 1px solid rgba(243, 242, 238, 0.10);
+  overflow: hidden;
+  transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+  will-change: transform;
+}
+
+/* The accent sweeps in from the leading edge on press, rather than the whole
+   button changing colour — the same wipe language used by the image masks. */
+.option::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s var(--ease-out);
+  z-index: 0;
+}
+:global(html[dir="rtl"]) .option::before { transform-origin: right center; }
+
+.option > * { position: relative; z-index: 1; }
+
+.option:active { transform: scale(0.982); }
+
+.option[data-selected="true"] {
+  border-color: var(--accent);
+  color: var(--bone);
+}
+.option[data-selected="true"]::before { transform: scaleX(1); }
+
+.optionMark {
+  flex: 0 0 auto;
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: rgba(243, 242, 238, 0.22);
+  transition: background-color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+.option[data-selected="true"] .optionMark {
+  background: var(--bone);
+  transform: scale(1.5);
+}
+
+/* ---- Result ------------------------------------------------------------ */
+
+.result {
+  position: relative;
+  will-change: transform, opacity;
+}
+
+/* The ring the result grows out of. */
+.resultRing {
+  position: absolute;
+  inset-block-start: -46px;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  inline-size: 220px;
+  block-size: 220px;
+  --ring-color: var(--accent);
+  opacity: 0.2;
+  pointer-events: none;
+  will-change: transform;
+}
+:global(html[dir="rtl"]) .resultRing { translate: 50% 0; }
+
+.resultCard {
+  position: relative;
+  padding: 30px 24px 26px;
+  background: linear-gradient(160deg, rgba(36, 38, 41, 0.94), rgba(16, 16, 16, 0.94));
+  border: 1px solid rgba(58, 123, 213, 0.32);
+}
+
+.resultKicker {
+  font-size: var(--t-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+  display: block;
+  margin-block-end: 12px;
+}
+:global(html[lang="ar"]) .resultKicker { letter-spacing: 0.04em; text-transform: none; }
+
+.resultTitle {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+}
+:global(html[lang="ar"]) .resultTitle {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.resultBody { margin-block-start: 16px; font-size: var(--t-small); }
+
+.resultActions {
+  margin-block-start: 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.resultCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: var(--accent);
+  color: var(--bone);
+  font-size: var(--t-small);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.25s var(--ease-out);
+}
+.resultCta:active { transform: scale(0.96); }
+
+.resultCta svg { transition: transform 0.35s var(--ease-out); }
+.resultCta:active svg { transform: translateX(4px); }
+:global(html[dir="rtl"]) .resultCta svg { transform: scaleX(-1); }
+:global(html[dir="rtl"]) .resultCta:active svg { transform: scaleX(-1) translateX(4px); }
+
+.restart {
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+  padding-block: 8px;
+  border-block-end: 1px solid transparent;
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.restart:active { color: var(--bone); border-block-end-color: var(--rule-strong); }
+:global(html[lang="ar"]) .restart { letter-spacing: 0.04em; text-transform: none; }

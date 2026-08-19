@@ -1,0 +1,21 @@
+.copy {
+  text-wrap: pretty;
+}
+
+.copy[data-size="small"] {
+  font-size: var(--t-small);
+  line-height: 1.55;
+}
+
+/* SplitText writes these onto generated line/word wrappers. The overflow
+   clip creates the mask each line rises out of. */
+.splitLine {
+  overflow: hidden;
+  padding-block-end: 0.14em;
+  margin-block-end: -0.14em;
+  will-change: transform;
+}
+
+.splitWord {
+  will-change: transform;
+}

@@ -1,0 +1,21 @@
+.wrap {
+  display: block;
+  color: var(--fg);
+}
+
+.wrap[data-size="mega"] { font-size: var(--t-mega); }
+.wrap[data-size="xl"]   { font-size: var(--t-xl); }
+.wrap[data-size="lg"]   { font-size: var(--t-lg); }
+.wrap[data-size="md"]   { font-size: var(--t-md); }
+
+.slot {
+  display: block;
+  overflow: hidden;
+  padding-block-end: 0.08em;
+  margin-block-end: -0.08em;
+}
+
+.word {
+  display: block;
+  will-change: transform, opacity;
+}

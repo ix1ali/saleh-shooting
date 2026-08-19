@@ -1,0 +1,40 @@
+.wrap {
+  display: inline-flex;
+  align-items: stretch;
+  /* Digits must never mirror in RTL — clock times stay LTR. */
+  direction: ltr;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.wrap[data-size="lg"]   { font-size: var(--t-lg); }
+.wrap[data-size="xl"]   { font-size: var(--t-xl); }
+.wrap[data-size="mega"] { font-size: var(--t-mega); }
+
+.window {
+  display: block;
+  overflow: hidden;
+  block-size: 1em;
+  /* Exactly one tabular figure wide. Anything less clips the glyph sides. */
+  inline-size: 1ch;
+}
+
+.strip {
+  display: block;
+  will-change: transform;
+}
+
+.digit {
+  display: block;
+  block-size: 1em;
+  line-height: 1;
+  text-align: center;
+}
+
+.static {
+  display: block;
+  block-size: 1em;
+  line-height: 1;
+  padding-inline: 0.04em;
+  opacity: 0.55;
+}
