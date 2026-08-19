@@ -1,0 +1,325 @@
+/* =========================================================================
+   BUY ROUNDS — the shop.
+   White, generous, one decision at a time. No product grid, no filters, no
+   rounded cards floating on a background. Choices are full-width rows and
+   large imagery; the page reads as a configurator, not a catalogue.
+   ====================================================================== */
+
+.section {
+  position: relative;
+  background: var(--paper);
+  color: var(--paper-ink);
+  padding-block: 12svh 14svh;
+  padding-inline: var(--gutter);
+}
+
+.label {
+  font-size: var(--t-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--paper-muted);
+}
+:global(html[lang="ar"]) .label { letter-spacing: 0.03em; text-transform: none; }
+
+.heading {
+  margin-block-start: 20px;
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--paper-ink);
+}
+:global(html[lang="ar"]) .heading {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.step {
+  margin-block-start: 42px;
+}
+
+.stepHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-block-end: 14px;
+  border-block-end: 1px solid var(--paper-rule);
+}
+
+.stepNum {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent-deep);
+  direction: ltr;
+}
+
+.stepTitle {
+  font-size: var(--t-small);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--paper-ink);
+}
+
+.stepBack {
+  margin-inline-start: auto;
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  padding: 6px 0;
+}
+:global(html[lang="ar"]) .stepBack { letter-spacing: 0.02em; text-transform: none; }
+
+/* ---- Range choice ------------------------------------------------------ */
+
+.ranges {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-block-start: 4px;
+}
+
+.range {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--void);
+  text-align: start;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rangeMedia { position: absolute; inset: 0; }
+
+.rangeTint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(4, 7, 14, 0.82) 0%, rgba(4, 7, 14, 0.18) 55%, transparent 100%);
+}
+
+.rangeBody {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding: 14px;
+}
+
+.rangeName {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+:global(html[lang="ar"]) .rangeName {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.rangeFrom {
+  display: block;
+  margin-block-start: 5px;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  direction: ltr;
+}
+
+.range[data-selected="true"] { outline: 2px solid var(--accent-deep); outline-offset: -2px; }
+
+/* ---- Firearm choice ----------------------------------------------------- */
+
+.guns { margin-block-start: 4px; }
+
+.gun {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  inline-size: 100%;
+  padding-block: 16px;
+  border-block-end: 1px solid var(--paper-rule);
+  text-align: start;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gunMedia {
+  position: relative;
+  inline-size: 96px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--void);
+}
+
+.gunName {
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--paper-ink);
+  line-height: 1.2;
+}
+
+.gunMeta {
+  display: block;
+  margin-block-start: 4px;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  direction: ltr;
+}
+
+.gunFrom {
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 700;
+  color: var(--paper-ink);
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.gun[data-selected="true"] .gunName { color: var(--accent-deep); }
+.gun[data-unavailable="true"] { opacity: 0.5; }
+
+.unavailable {
+  display: block;
+  margin-block-start: 4px;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #A4351F;
+}
+:global(html[lang="ar"]) .unavailable { letter-spacing: 0; text-transform: none; }
+
+/* ---- Package choice ----------------------------------------------------- */
+
+.packs { margin-block-start: 4px; }
+
+.pack {
+  display: block;
+  inline-size: 100%;
+  padding-block: 18px;
+  border-block-end: 1px solid var(--paper-rule);
+  text-align: start;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.packTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.packCount {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--paper-ink);
+  direction: ltr;
+}
+
+.packPrice {
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 700;
+  color: var(--paper-ink);
+  direction: ltr;
+}
+
+/* The count, shown rather than described. Thin marks, one per round. */
+.tally {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  margin-block-start: 12px;
+  block-size: 22px;
+}
+
+.mark {
+  inline-size: 3px;
+  block-size: 100%;
+  background: var(--paper-ink);
+  opacity: 0.24;
+  transform-origin: 50% 100%;
+  transition: opacity 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+}
+
+/* Every fifth mark is taller, so the count is countable at a glance. */
+.mark[data-five="true"] { block-size: 132%; }
+
+.pack[data-selected="true"] .mark { opacity: 1; background: var(--accent-deep); }
+.pack[data-selected="true"] .packCount { color: var(--accent-deep); }
+
+/* ---- Add ---------------------------------------------------------------- */
+
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block-start: 26px;
+}
+
+.qty {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--paper-rule-strong);
+}
+
+.qtyBtn {
+  inline-size: 42px;
+  block-size: 46px;
+  font-size: 1.1rem;
+  color: var(--paper-ink);
+  display: grid;
+  place-items: center;
+}
+.qtyBtn:disabled { opacity: 0.3; }
+
+.qtyValue {
+  min-inline-size: 34px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-small);
+  direction: ltr;
+}
+
+.add {
+  flex: 1 1 auto;
+  block-size: 46px;
+  background: var(--paper-ink);
+  color: var(--paper);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background-color 0.3s var(--ease-out), transform 0.2s var(--ease-out);
+}
+.add:active { transform: scale(0.985); background: var(--accent-deep); }
+.add:disabled { opacity: 0.35; }
+:global(html[lang="ar"]) .add { letter-spacing: 0; text-transform: none; }
+
+.added {
+  margin-block-start: 12px;
+  font-size: var(--t-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+:global(html[lang="ar"]) .added { letter-spacing: 0; text-transform: none; }

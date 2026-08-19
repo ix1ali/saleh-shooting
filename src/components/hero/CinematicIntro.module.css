@@ -26,11 +26,43 @@
   will-change: mask-image, opacity;
 }
 
+/* ---- The rifle plate ---------------------------------------------------
+   The opening frame is a real photograph of a precision rifle on the bench,
+   not a drawing and not a dark suggestion of one. It has to be obvious within
+   the first moment: the scope and barrel sit in the upper half of the phone
+   screen with the lane running away behind them.
+
+   It stays on top of the 3D lane until the shot, then pushes forward and
+   dissolves as the camera leaves the bench and goes downrange. That is what
+   makes the sequence read as rifle -> firing -> bullet rather than a projectile
+   appearing from nowhere.
+   -------------------------------------------------------------------- */
+
+.plate {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+.plateImg { position: absolute; inset: 0; }
+
+/* Keeps the photograph on the site palette and stops the bench going muddy. */
+.plateGrade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(4, 7, 14, 0.42) 0%, transparent 26%,
+      transparent 54%, rgba(4, 7, 14, 0.78) 100%),
+    linear-gradient(to top right, rgba(18, 66, 143, 0.24), transparent 62%);
+}
+
 /* ---- Stage ------------------------------------------------------------- */
 
 .stage {
   position: absolute;
   inset: 0;
+  z-index: 1;
   perspective: 300px;
   perspective-origin: 50% 44%;
   transform-style: preserve-3d;

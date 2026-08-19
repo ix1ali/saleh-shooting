@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { LocaleProvider } from "@/lib/locale";
+import { CartProvider } from "@/lib/cart";
 import "@/styles/globals.css";
 
 const archivo = Archivo({
@@ -47,7 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" dir="ltr" className={`${archivo.variable} ${plexArabic.variable}`}>
       <body>
-        <LocaleProvider>{children}</LocaleProvider>
+        <LocaleProvider>
+          <CartProvider>{children}</CartProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

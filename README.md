@@ -92,6 +92,61 @@ tonal ramps, so the middle of each frame — where the subject is — stays clea
 **Consent:** several photographs show identifiable faces. Confirm you are cleared to
 publish each one before launch.
 
+## 3. Selling rounds
+
+The commerce side. **Demo persistence — see the warning below.**
+
+### Where things live
+
+| Concern | File |
+| --- | --- |
+| Firearms, packages, prices, loyalty rate | `src/data/catalogue.ts` |
+| Server persistence behind an interface | `src/server/store.ts` |
+| Payment provider abstraction | `src/server/payments.ts` |
+| Staff access check | `src/server/staff.ts` |
+| Cart (ids only, sessionStorage) | `src/lib/cart.tsx` |
+
+**Change a price in `catalogue.ts` and it changes everywhere** — shop, cart,
+checkout, order and receipt. Nothing hard-codes money. Amounts are integers in
+**fils** (1 KD = 1000), never floats.
+
+### Rules the server enforces
+
+These are the reasons the flow can be trusted, and they must survive any rewrite:
+
+- **The browser never states a price.** It sends ids and quantities; `/api/orders`
+  re-prices every line from the catalogue. A tampered cart cannot change the total.
+- **The browser never decides a payment succeeded.** It asks
+  `/api/payments/confirm`, and the server sets `paymentStatus`.
+- **An order id is not enough to read an order.** Reads require the verification
+  token as well, because the id is in the confirmation URL.
+- **The QR carries only the token.** No name, phone, Civil ID or contents.
+- **Civil ID never reaches a browser.** Customers get name and phone; staff get
+  the last four digits.
+- **Redemption is refused server-side** if unpaid or already redeemed. Hiding the
+  button is not a control.
+- **`/staff` is checked on every request.** The route being unlisted is not access
+  control. The passcode is `STAFF_PASSCODE` (default `shootq8`).
+
+### Verified end to end
+
+Order → decline path → payment → QR → staff lookup → redeem → double-redeem
+refused; plus inactive-firearm refusal, Civil ID validation, and no Civil ID in
+any client payload.
+
+### ⚠ Before real customers
+
+1. **`MemoryOrderRepository` is process memory.** Orders vanish on restart and are
+   not shared between serverless instances. Implement `OrderRepository` against
+   Postgres/Supabase — no route handler changes.
+2. **`DemoPaymentProvider` takes no money.** Implement `PaymentProvider` against a
+   Kuwaiti gateway and select it by env var.
+3. **Staff passcode is shared.** Replace with per-user staff accounts so
+   redemptions attribute to a named person.
+4. **Prices in `catalogue.ts` are placeholders.**
+
+---
+
 ## 3. The opening sequence
 
 `src/components/hero/` — the signature interaction.

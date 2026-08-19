@@ -1,0 +1,224 @@
+/* Checkout. Calm, light, one column. Nothing animates on scroll here. */
+
+.page {
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+
+.inner {
+  max-inline-size: var(--shell-w);
+  margin-inline: auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) var(--gutter)
+    calc(env(safe-area-inset-bottom, 0px) + 40px);
+}
+
+.back, .backLink {
+  display: inline-block;
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  padding-block: 8px;
+}
+:global(html[lang="ar"]) .back, :global(html[lang="ar"]) .backLink { letter-spacing: 0.02em; text-transform: none; }
+
+.title {
+  margin-block-start: 10px;
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+:global(html[lang="ar"]) .title { font-family: var(--font-arabic); text-transform: none; letter-spacing: 0; }
+
+.demo {
+  margin-block-start: 10px;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: #8A5A12;
+  background: #FFF7E6;
+  border: 1px solid #F0DFB8;
+  padding: 9px 11px;
+}
+
+.empty { margin-block: 20px; color: var(--paper-muted); font-size: var(--t-small); }
+
+.block { margin-block-start: 34px; }
+
+.blockTitle {
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  padding-block-end: 12px;
+  border-block-end: 1px solid var(--paper-rule);
+}
+:global(html[lang="ar"]) .blockTitle { letter-spacing: 0.02em; text-transform: none; }
+
+/* ---- Summary ---- */
+
+.line {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding-block: 14px;
+  border-block-end: 1px solid var(--paper-rule);
+}
+
+.lineMain { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
+.lineName { font-weight: 700; font-size: var(--t-small); }
+.lineMeta { font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--paper-muted); }
+:global(html[lang="ar"]) .lineMeta { letter-spacing: 0; text-transform: none; }
+.linePrice { font-family: var(--font-display); font-weight: 700; font-size: var(--t-small); direction: ltr; }
+.lineRemove { inline-size: 30px; block-size: 30px; color: var(--paper-muted); font-size: 1.1rem; }
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-block: 16px;
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+}
+:global(html[lang="ar"]) .totalRow { letter-spacing: 0.02em; text-transform: none; }
+
+.totalValue {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 700;
+  color: var(--paper-ink);
+  letter-spacing: -0.02em;
+  direction: ltr;
+}
+
+.points { font-size: 0.68rem; color: var(--paper-muted); }
+
+/* ---- Choice ---- */
+
+.primary {
+  inline-size: 100%;
+  block-size: 50px;
+  margin-block-start: 18px;
+  background: var(--paper-ink);
+  color: #FFFFFF;
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: transform 0.2s var(--ease-out);
+}
+.primary:active { transform: scale(0.985); }
+:global(html[lang="ar"]) .primary { letter-spacing: 0; text-transform: none; }
+
+.accountNote { margin-block-start: 12px; font-size: 0.68rem; color: var(--paper-muted); line-height: 1.5; }
+
+/* ---- Fields ---- */
+
+.field { margin-block-start: 18px; }
+
+.label {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--paper-muted);
+  margin-block-end: 7px;
+}
+:global(html[lang="ar"]) .label { letter-spacing: 0; text-transform: none; }
+
+.optional { text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+.inputWrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--paper-rule-strong);
+  background: #FFFFFF;
+}
+.inputWrap:focus-within { border-color: var(--accent-deep); }
+.inputWrap[data-error="true"] { border-color: #A4351F; }
+
+.prefix {
+  padding-inline: 12px;
+  font-size: var(--t-small);
+  color: var(--paper-muted);
+  border-inline-end: 1px solid var(--paper-rule);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  direction: ltr;
+}
+
+.input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  block-size: 48px;
+  padding-inline: 12px;
+  font-size: 16px; /* iOS zooms anything smaller on focus */
+  color: var(--paper-ink);
+  background: transparent;
+}
+
+.hint { margin-block-start: 6px; font-size: 0.66rem; color: var(--paper-muted); }
+.fieldError { margin-block-start: 6px; font-size: 0.68rem; color: #A4351F; }
+
+/* ---- Payment ---- */
+
+.methods { display: flex; flex-direction: column; gap: 8px; margin-block-start: 16px; }
+
+.method {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  inline-size: 100%;
+  padding: 15px 14px;
+  border: 1px solid var(--paper-rule-strong);
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--paper-ink);
+  background: #FFFFFF;
+}
+.method[data-selected="true"] { border-color: var(--paper-ink); border-width: 2px; padding: 14px 13px; }
+
+.demoTag {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A5A12;
+  background: #FFF7E6;
+  border: 1px solid #F0DFB8;
+  padding: 3px 6px;
+}
+:global(html[lang="ar"]) .demoTag { letter-spacing: 0; text-transform: none; }
+
+.pay {
+  inline-size: 100%;
+  block-size: 52px;
+  margin-block-start: 18px;
+  background: var(--paper-ink);
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  transition: transform 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+  direction: ltr;
+}
+.pay:active { transform: scale(0.985); }
+.pay[data-busy="true"] { opacity: 0.7; }
+.pay:disabled { opacity: 0.55; }
+
+.error {
+  margin-block-start: 14px;
+  font-size: var(--t-small);
+  color: #A4351F;
+  background: #FDF2F0;
+  border: 1px solid #F0C8C0;
+  padding: 11px 12px;
+}

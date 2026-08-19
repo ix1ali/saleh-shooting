@@ -16,6 +16,10 @@ const PLAN = [
   { name: "archery", src: "archery.png", w: 1200, h: 1600, pos: "attention" },
   { name: "range", src: "range.png", w: 1200, h: 1600, pos: "attention" },
   { name: "booths", src: "range2.png", w: 1200, h: 1600, pos: "attention" },
+  /* The hero plate. A tall crop of the bench-rest frame: the rifle has to be
+     unmistakable at the top of a phone screen, with the lane running away
+     behind it. Cropped from the top so the scope and barrel stay in frame. */
+  { name: "hero-rifle", src: "rifle.png", w: 1200, h: 2100, pos: "top" },
 ];
 
 const report = [];

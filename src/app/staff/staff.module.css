@@ -1,0 +1,156 @@
+/* Cashier console. Dense, high contrast, thumb-sized targets. Nothing here
+   animates: staff use it dozens of times a shift. */
+
+.page { min-height: 100dvh; background: var(--paper-soft); color: var(--paper-ink); }
+
+.inner, .gate {
+  max-inline-size: 560px;
+  margin-inline: auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 18px
+    calc(env(safe-area-inset-bottom, 0px) + 40px);
+}
+
+.gate { max-inline-size: 340px; padding-block-start: 18svh; }
+.gateTitle, .title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+
+.refresh, .label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+}
+.label { display: block; margin-block: 18px 7px; }
+
+.input, .search {
+  inline-size: 100%;
+  block-size: 48px;
+  padding-inline: 12px;
+  font-size: 16px;
+  color: var(--paper-ink);
+  background: #FFFFFF;
+  border: 1px solid var(--paper-rule-strong);
+}
+.search { margin-block-start: 14px; }
+.input:focus, .search:focus { border-color: var(--accent-deep); outline: none; }
+
+.primary {
+  inline-size: 100%;
+  block-size: 48px;
+  margin-block-start: 14px;
+  background: var(--paper-ink);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.empty { margin-block-start: 24px; color: var(--paper-muted); font-size: 0.85rem; }
+
+.list { margin-block-start: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.order {
+  background: #FFFFFF;
+  border: 1px solid var(--paper-rule);
+  padding: 14px;
+}
+.order[data-done="true"] { opacity: 0.62; }
+
+.orderTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.orderNo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  direction: ltr;
+}
+
+.badges { display: flex; gap: 6px; }
+
+.badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 7px;
+  border: 1px solid;
+}
+.badge[data-tone="ok"]   { color: #1E7A47; border-color: #A9D9BF; background: #EFF9F3; }
+.badge[data-tone="warn"] { color: #A4351F; border-color: #F0C8C0; background: #FDF2F0; }
+.badge[data-tone="open"] { color: #0B1220; border-color: var(--paper-rule-strong); }
+.badge[data-tone="done"] { color: var(--paper-muted); border-color: var(--paper-rule); }
+
+.customer {
+  margin-block-start: 9px;
+  font-size: 0.78rem;
+  color: var(--paper-muted);
+  direction: ltr;
+}
+
+.items { margin-block-start: 10px; font-size: 0.85rem; line-height: 1.55; }
+.items li { list-style: none; }
+.cal { color: var(--paper-muted); font-size: 0.72rem; }
+
+.orderFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-block-start: 10px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--paper-rule);
+}
+.total { font-family: var(--font-display); font-weight: 700; direction: ltr; }
+.when { font-size: 0.7rem; color: var(--paper-muted); direction: ltr; }
+
+.redeem {
+  inline-size: 100%;
+  block-size: 46px;
+  margin-block-start: 12px;
+  background: var(--paper-ink);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.redeem:disabled { opacity: 0.4; }
+
+.ghost {
+  flex: 1 1 auto;
+  block-size: 46px;
+  border: 1px solid var(--paper-rule-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.confirm { margin-block-start: 12px; font-size: 0.82rem; }
+.confirmRow { display: flex; gap: 8px; margin-block-start: 10px; }
+.confirmRow .redeem { flex: 1 1 auto; margin-block-start: 0; }
+
+.redeemed {
+  margin-block-start: 12px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--paper-muted);
+  direction: ltr;
+}
+
+.error {
+  margin-block-start: 14px;
+  font-size: 0.8rem;
+  color: #A4351F;
+  background: #FDF2F0;
+  border: 1px solid #F0C8C0;
+  padding: 10px 11px;
+}

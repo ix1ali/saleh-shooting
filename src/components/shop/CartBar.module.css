@@ -1,0 +1,52 @@
+/* Sticky cart. Appears only when there is something in it, sits above the
+   safe area, and never covers the last line of a section (the page reserves
+   space for it while it is up). */
+
+.bar {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: 100%;
+  max-inline-size: var(--shell-w);
+  z-index: 70;
+  padding: 12px var(--gutter) calc(env(safe-area-inset-bottom, 0px) + 12px);
+  background: var(--paper-ink);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  will-change: transform;
+}
+
+.summary { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
+
+.count {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.66);
+}
+:global(html[lang="ar"]) .count { letter-spacing: 0.02em; text-transform: none; }
+
+.total {
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 700;
+  direction: ltr;
+}
+
+.go {
+  margin-inline-start: auto;
+  padding: 13px 20px;
+  background: #FFFFFF;
+  color: var(--paper-ink);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: transform 0.2s var(--ease-out);
+}
+.go:active { transform: scale(0.97); }
+:global(html[lang="ar"]) .go { letter-spacing: 0; text-transform: none; }

@@ -4,8 +4,9 @@ import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { prefersReducedMotion, useIsoLayoutEffect } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
-import { intro as introCopy, ui } from "@/data/site";
+import { hero as heroCopy, intro as introCopy, ui } from "@/data/site";
 import TargetRings from "@/components/motion/TargetRings";
+import Photo from "@/components/visual/Photo";
 import styles from "./CinematicIntro.module.css";
 
 /* -------------------------------------------------------------------------
@@ -128,8 +129,8 @@ export default function CinematicIntro({ onDone }: Props) {
       t.to(q(`.${styles.controls}`), { autoAlpha: 0, duration: 0.2 })
         .to(q(`.${styles.muzzle}`), { autoAlpha: 1, duration: 0.06 }, 0)
         .to(q(`.${styles.muzzle}`), { autoAlpha: 0, duration: 0.16 }, 0.06)
-        .to(root, { "--holeR": "160%", duration: 0.7, ease: "power2.inOut" }, 0.2)
-        .to(root, { autoAlpha: 0, duration: 0.25 }, 0.75);
+        .to(root, { "--holeR": "160%", duration: 0.55, ease: "power2.inOut" }, 0.16)
+        .to(root, { autoAlpha: 0, duration: 0.2 }, 0.6);
       tl.current = t;
       return;
     }
@@ -155,73 +156,71 @@ export default function CinematicIntro({ onDone }: Props) {
     const tear = q(`.${styles.tear}`);
     const through = q(`.${styles.throughFlash}`);
 
-    /* -- Phase 1 · trigger (0 → 0.28) ----------------------------------- */
-    t.to(controls, { autoAlpha: 0, y: 18, duration: 0.18, ease: "power2.in" }, 0);
+    const plate = q(`.${styles.plate}`);
 
-    /* Muzzle flash: a few frames, no more. */
-    t.set(muzzle, { autoAlpha: 1 }, 0.06)
-      .to(muzzle, { autoAlpha: 0, duration: 0.13, ease: "power2.out" }, 0.09);
-    t.set(surface, { autoAlpha: 0.9 }, 0.06)
-      .to(surface, { autoAlpha: 0, duration: 0.22, ease: "power2.out" }, 0.09);
+    /* -- Phase 1 · trigger (0 → 0.22) -----------------------------------
+       The rifle is still on screen here. Everything in this window happens to
+       the bench, so the shot is clearly fired from the weapon in frame. */
+    t.to(controls, { autoAlpha: 0, y: 16, duration: 0.14, ease: "power2.in" }, 0);
 
-    /* Recoil: the camera is kicked back, then recovers onto the lane. */
-    t.fromTo(
-      st,
-      { y: 0, scale: 1 },
-      { y: 16, scale: 0.995, duration: 0.07, ease: "power3.out" },
-      0.06
-    ).to(st, { y: 0, scale: 1, duration: 0.42, ease: "elastic.out(1, 0.55)" }, 0.13);
+    t.set(muzzle, { autoAlpha: 1 }, 0.04)
+      .to(muzzle, { autoAlpha: 0, duration: 0.11, ease: "power2.out" }, 0.07);
+    t.set(surface, { autoAlpha: 0.85 }, 0.04)
+      .to(surface, { autoAlpha: 0, duration: 0.18, ease: "power2.out" }, 0.07);
 
-    /* -- Phase 2 · the camera catches the round (0.18 → 0.55) ----------- */
-    t.set(round, { autoAlpha: 1 }, 0.16)
-      .fromTo(round, { scale: 2.6, y: 120 }, { scale: 1, y: 0, duration: 0.34, ease: "power2.out" }, 0.16);
-    t.fromTo(trail, { autoAlpha: 0, scaleY: 0.2 }, { autoAlpha: 0.9, scaleY: 1, duration: 0.3 }, 0.2);
+    /* Recoil rides the plate and the stage together, so the rifle and the room
+       kick as one. */
+    if (plate) {
+      t.fromTo(plate, { y: 0, scale: 1 }, { y: 14, scale: 1.012, duration: 0.06, ease: "power3.out" }, 0.04)
+        .to(plate, { y: 0, scale: 1, duration: 0.3, ease: "elastic.out(1, 0.55)" }, 0.1);
+    }
+    t.fromTo(st, { y: 0 }, { y: 10, duration: 0.06, ease: "power3.out" }, 0.04)
+      .to(st, { y: 0, duration: 0.3, ease: "elastic.out(1, 0.55)" }, 0.1);
 
-    /* -- Phase 3 · range travel (0.2 → 2.35) ---------------------------- */
-    /* Two legs: the acceleration off the line, then the long run. Apparent
-       speed comes from the geometry passing, not from added speed lines. */
-    t.to(cam, { z: 900, duration: 0.55, ease: "power2.in" }, 0.2)
-      .to(cam, { z: 2750, duration: 1.25, ease: "none" }, 0.75);
+    /* -- Phase 2 · leaving the bench (0.18 → 0.6) ------------------------
+       The plate pushes past the camera and dissolves as the lane takes over. */
+    if (plate) {
+      t.to(plate, { scale: 1.5, autoAlpha: 0, duration: 0.42, ease: "power2.in" }, 0.18);
+    }
 
-    /* Velocity cues ride the same window and never exceed a whisper. */
-    t.to(streak, { autoAlpha: 0.85, duration: 0.5 }, 0.3)
-      .to(dof, { autoAlpha: 1, duration: 0.5 }, 0.35);
-    t.fromTo(streak, { scale: 1 }, { scale: 1.5, duration: 1.7, ease: "none" }, 0.3);
+    t.set(round, { autoAlpha: 1 }, 0.2)
+      .fromTo(round, { scale: 2.4, y: 90 }, { scale: 1, y: 0, duration: 0.28, ease: "power2.out" }, 0.2);
+    t.fromTo(trail, { autoAlpha: 0, scaleY: 0.2 }, { autoAlpha: 0.9, scaleY: 1, duration: 0.24 }, 0.24);
 
-    /* A little vibration through the fast leg only. */
-    t.to(st, { x: 1.6, duration: 0.05, repeat: 22, yoyo: true, ease: "none" }, 0.75)
-      .set(st, { x: 0 }, 1.95);
+    /* -- Phase 3 · the run (0.18 → 1.55) --------------------------------- */
+    t.to(cam, { z: 1100, duration: 0.5, ease: "power2.in" }, 0.18)
+      .to(cam, { z: 2900, duration: 0.72, ease: "none" }, 0.68);
 
-    /* -- Phase 4 · target approach (2.0 → 2.95) -------------------------- */
-    t.to(cam, { z: 3380, duration: 0.6, ease: "power1.out" }, 2.0);
-    t.to(streak, { autoAlpha: 0, duration: 0.4 }, 2.35)
-      .to(dof, { autoAlpha: 0.35, duration: 0.4 }, 2.35);
-    t.to(trail, { autoAlpha: 0, duration: 0.3 }, 2.4);
+    t.to(streak, { autoAlpha: 0.85, duration: 0.3 }, 0.28)
+      .to(dof, { autoAlpha: 1, duration: 0.3 }, 0.3);
+    t.fromTo(streak, { scale: 1 }, { scale: 1.45, duration: 1.1, ease: "none" }, 0.28);
 
-    /* The slight hold before the strike. Roughly 200ms of eased-down time. */
-    t.to(cam, { z: CAM_END, duration: 0.42, ease: "power3.out" }, 2.6);
+    t.to(st, { x: 1.4, duration: 0.05, repeat: 12, yoyo: true, ease: "none" }, 0.68)
+      .set(st, { x: 0 }, 1.32);
 
-    /* -- Phase 5 · impact, then through --------------------------------- */
-    /* The sheet buckles, the strike opens, and the mask takes over from the
-       drawn tear so the hole becomes a real opening in this layer. */
-    t.to(round, { autoAlpha: 0, duration: 0.05 }, 2.98);
-    t.set(tear, { autoAlpha: 1 }, 2.98)
-      .fromTo(paper, { "--paperPunch": 1 }, { "--paperPunch": 1.035, duration: 0.07, ease: "power3.out" }, 2.98)
-      .to(paper, { "--paperPunch": 1, duration: 0.3, ease: "elastic.out(1, 0.5)" }, 3.05);
-    t.fromTo(tear, { "--tear": 0 }, { "--tear": 3.4, duration: 0.34, ease: "power2.in" }, 2.98);
+    /* -- Phase 4 · target approach (1.4 → 1.95) --------------------------
+       The last stretch eases down: roughly 200ms of slowed time before the
+       strike, which is what makes the impact land. */
+    t.to(cam, { z: CAM_END, duration: 0.55, ease: "power3.out" }, 1.4);
+    t.to(streak, { autoAlpha: 0, duration: 0.28 }, 1.5)
+      .to(dof, { autoAlpha: 0.3, duration: 0.28 }, 1.5);
+    t.to(trail, { autoAlpha: 0, duration: 0.2 }, 1.5);
 
-    t.set(through, { autoAlpha: 0.55 }, 3.0)
-      .to(through, { autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.06);
+    /* -- Phase 5 · impact, then through (1.95 → 2.45) -------------------- */
+    t.to(round, { autoAlpha: 0, duration: 0.04 }, 1.95);
+    t.set(tear, { autoAlpha: 1 }, 1.95)
+      .fromTo(paper, { "--paperPunch": 1 }, { "--paperPunch": 1.035, duration: 0.06, ease: "power3.out" }, 1.95)
+      .to(paper, { "--paperPunch": 1, duration: 0.26, ease: "elastic.out(1, 0.5)" }, 2.01);
+    t.fromTo(tear, { "--tear": 0 }, { "--tear": 3.4, duration: 0.26, ease: "power2.in" }, 1.95);
 
-    /* The camera continues through the opening as the hole becomes the mask. */
-    t.to(cam, { z: CAM_END + 340, duration: 0.62, ease: "power2.in" }, 3.0);
-    t.fromTo(
-      root,
-      { "--holeR": "0%" },
-      { "--holeR": "165%", duration: 0.72, ease: "power2.in" },
-      3.08
-    );
-    t.to(root, { autoAlpha: 0, duration: 0.18 }, 3.68);
+    /* The paper blows out to white, which is what carries the eye into the
+       light section waiting underneath. */
+    t.set(through, { autoAlpha: 0.85 }, 1.97)
+      .to(through, { autoAlpha: 0, duration: 0.42, ease: "power2.out" }, 2.06);
+
+    t.to(cam, { z: CAM_END + 300, duration: 0.5, ease: "power2.in" }, 1.97);
+    t.fromTo(root, { "--holeR": "0%" }, { "--holeR": "165%", duration: 0.5, ease: "power2.in" }, 2.0);
+    t.to(root, { autoAlpha: 0, duration: 0.16 }, 2.4);
   }, [firing, ready, finish]);
 
   /* ---- The control drifts toward the pointer, then settles -------------- */
@@ -285,6 +284,19 @@ export default function CinematicIntro({ onDone }: Props) {
         } as React.CSSProperties
       }
     >
+      {/* The rifle. Present and unmistakable from the first frame. */}
+      <div className={styles.plate}>
+        <Photo
+          name="hero-rifle"
+          alt={T(heroCopy.imageAlt)}
+          grade="none"
+          priority
+          position="center 32%"
+          className={styles.plateImg}
+        />
+        <span className={styles.plateGrade} aria-hidden="true" />
+      </div>
+
       <div ref={stage} className={styles.stage}>
         <div className={styles.camera}>
           <div className={`${styles.plane} ${styles.floor}`} />

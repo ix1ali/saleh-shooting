@@ -57,6 +57,17 @@
   --accent-teal:   #279ACF;
   --accent-glow:   rgba(46, 144, 245, 0.34);
 
+  /* ---- Paper -------------------------------------------------------
+     The light half of the site. White sections carry the practical content
+     — shop, hours, location — where contrast and calm matter more than
+     atmosphere. Ink is the same navy family, never pure black. */
+  --paper:            #FFFFFF;
+  --paper-soft:       #F4F6F9;
+  --paper-ink:        #0B1220;
+  --paper-muted:      #5C6A80;
+  --paper-rule:       rgba(11, 18, 32, 0.12);
+  --paper-rule-strong: rgba(11, 18, 32, 0.28);
+
   /* ---- Semantic --------------------------------------------------- */
   --bg:          var(--ink);
   --fg:          var(--bone);

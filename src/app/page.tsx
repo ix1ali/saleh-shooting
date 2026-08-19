@@ -3,8 +3,8 @@ import SiteChrome from "@/components/ui/SiteChrome";
 import IntroGate from "@/components/hero/IntroGate";
 import IntroSection from "@/components/sections/IntroSection";
 import RangesGrid from "@/components/sections/RangesGrid";
-import Armoury from "@/components/sections/Armoury";
-import GoodToKnow from "@/components/sections/GoodToKnow";
+import BuyRounds from "@/components/shop/BuyRounds";
+import CartBar from "@/components/shop/CartBar";
 import HoursLocation from "@/components/sections/HoursLocation";
 import ContactCTA from "@/components/sections/ContactCTA";
 
@@ -18,11 +18,11 @@ export default function Home() {
       <main className="shell">
         <IntroSection />
         <RangesGrid />
-        <Armoury />
-        <GoodToKnow />
+        <BuyRounds />
         <HoursLocation />
         <ContactCTA />
       </main>
+      <CartBar />
     </>
   );
 }

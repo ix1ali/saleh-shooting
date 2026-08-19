@@ -350,16 +350,91 @@ export const contactSection = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* SHOP                                                                        */
+/* -------------------------------------------------------------------------- */
+
+export const shop = {
+  label: t("03 / Buy rounds", "٠٣ / شراء الطلقات"),
+  heading: t("WHAT DO YOU WANT TO SHOOT?", "ماذا تريد أن ترمي؟"),
+  stepRange: t("Choose your range", "اختر الميدان"),
+  stepGun: t("Choose a firearm", "اختر السلاح"),
+  stepRounds: t("Choose your rounds", "اختر عدد الطلقات"),
+  from: t("From", "من"),
+  change: t("Change", "تغيير"),
+  add: t("Add to cart", "أضف إلى السلة"),
+  pickRounds: t("Pick a package", "اختر باقة"),
+  addedToCart: t("Added", "تمت الإضافة"),
+  unavailable: t("Temporarily unavailable", "غير متوفر مؤقتاً"),
+  increase: t("Increase quantity", "زيادة الكمية"),
+  decrease: t("Decrease quantity", "تقليل الكمية"),
+  /* Cart */
+  cartTitle: t("Your shoot", "جلستك"),
+  items: t("items", "عناصر"),
+  item: t("item", "عنصر"),
+  checkout: t("Checkout", "إتمام الشراء"),
+  remove: t("Remove", "إزالة"),
+  total: t("Total", "الإجمالي"),
+  emptyCart: t("Nothing in your cart yet.", "لا يوجد شيء في سلتك بعد."),
+  buyRounds: t("Buy rounds", "شراء طلقات"),
+  demoNotice: t(
+    "Demo mode — no real payment is taken and prices are placeholders.",
+    "وضع تجريبي — لا يتم تحصيل أي مبلغ فعلي والأسعار مؤقتة."
+  ),
+};
+
+/* -------------------------------------------------------------------------- */
+/* CHECKOUT                                                                    */
+/* -------------------------------------------------------------------------- */
+
+export const checkout = {
+  title: t("Checkout", "إتمام الشراء"),
+  back: t("Back to shop", "العودة للمتجر"),
+  howTitle: t("How would you like to continue?", "كيف تود المتابعة؟"),
+  guest: t("Continue as guest", "المتابعة كضيف"),
+  accountSoon: t(
+    "Accounts, points and rewards are coming next. Guest checkout works fully today.",
+    "الحسابات والنقاط والمكافآت قادمة قريباً. الشراء كضيف يعمل بالكامل اليوم."
+  ),
+  detailsTitle: t("Your details", "بياناتك"),
+  fullName: t("Full name", "الاسم الكامل"),
+  phone: t("Phone", "رقم الهاتف"),
+  civilId: t("Civil ID number", "الرقم المدني"),
+  civilIdHint: t("12 digits. Required at the range.", "١٢ رقماً. مطلوب في الميدان."),
+  dob: t("Date of birth", "تاريخ الميلاد"),
+  email: t("Email", "البريد الإلكتروني"),
+  optional: t("(optional)", "(اختياري)"),
+  payTitle: t("Payment", "الدفع"),
+  applePay: t("Apple Pay", "أبل باي"),
+  card: t("Card", "بطاقة"),
+  demoTag: t("Demo", "تجريبي"),
+  pay: t("Pay", "ادفع"),
+  processing: t("Processing…", "جارٍ المعالجة…"),
+  pointsHint: t("You would earn {n} points with an account.", "ستكسب {n} نقطة مع حساب."),
+  errName: t("Enter your full name.", "أدخل اسمك الكامل."),
+  errPhone: t("Enter an 8-digit Kuwaiti number.", "أدخل رقماً كويتياً من ٨ خانات."),
+  errCivilId: t("Civil ID must be 12 digits.", "الرقم المدني يجب أن يكون ١٢ خانة."),
+  errDob: t("Enter your date of birth.", "أدخل تاريخ ميلادك."),
+  errEmail: t("Enter a valid email or leave it blank.", "أدخل بريداً صحيحاً أو اتركه فارغاً."),
+  errUnavailable: t(
+    "Something in your cart just became unavailable. Please review it.",
+    "أحد العناصر في سلتك لم يعد متوفراً. يرجى مراجعتها."
+  ),
+  errOrder: t("We could not create your order. Please try again.", "تعذّر إنشاء طلبك. حاول مرة أخرى."),
+  errPayment: t("Payment did not go through. Please try again.", "لم تتم عملية الدفع. حاول مرة أخرى."),
+  errCancelled: t("Payment was cancelled.", "تم إلغاء عملية الدفع."),
+  errNetwork: t("Connection lost. Please try again.", "انقطع الاتصال. حاول مرة أخرى."),
+};
+
+/* -------------------------------------------------------------------------- */
 /* NAVIGATION                                                                  */
 /* -------------------------------------------------------------------------- */
 
 export const navItems = [
   { id: "intro", index: "01", label: t("The Complex", "المجمع") },
   { id: "experiences", index: "02", label: t("Ranges", "الميادين") },
-  { id: "armoury", index: "03", label: t("The Locker", "الخزنة") },
-  { id: "info", index: "04", label: t("Good to Know", "معلومات مفيدة") },
-  { id: "visit", index: "05", label: t("Hours", "المواعيد") },
-  { id: "contact", index: "06", label: t("Contact", "التواصل") },
+  { id: "buy", index: "03", label: t("Buy Rounds", "شراء الطلقات") },
+  { id: "visit", index: "04", label: t("Location", "الموقع") },
+  { id: "contact", index: "05", label: t("Contact", "التواصل") },
 ];
 
 /* -------------------------------------------------------------------------- */
