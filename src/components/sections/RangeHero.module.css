@@ -299,6 +299,7 @@
   padding: 0 var(--gutter) calc(env(safe-area-inset-bottom, 0px) + 150px);
   pointer-events: none;
   will-change: transform, opacity;
+  z-index: 4;
 }
 
 .eyebrow {
@@ -459,24 +460,17 @@
    approach, so by the time the target fills the frame it carries a group.
    -------------------------------------------------------------------- */
 
-.tracer {
+/* The round. Anchored on the vanishing point and scaled about its own centre,
+   so shrinking it is the same thing as sending it downrange. */
+.round {
   position: absolute;
   left: 50%;
   top: 42%;
-  width: 5px;
-  height: 26px;
-  margin-left: -2.5px;
-  margin-top: -13px;
-  border-radius: 3px;
-  background: linear-gradient(to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(200, 230, 255, 0.9) 35%,
-    #FFFFFF 60%,
-    rgba(150, 205, 255, 0.6) 85%,
-    transparent 100%);
-  box-shadow: 0 0 12px 3px rgba(120, 190, 255, 0.85);
-  opacity: 0;
+  width: 150px;
+  height: 322px;
+  transform-origin: 50% 50%;
   will-change: transform, opacity;
+  z-index: 1;
 }
 
 /* The flash on the paper as a round lands. */
@@ -511,59 +505,16 @@
   will-change: opacity, transform;
 }
 
-/* ---- The sidearm in the foreground -------------------------------------
-   Held in the lower-right of the frame, pointed downrange. It recoils when a
-   round leaves and settles back, and it leaves the frame once the camera
-   commits to the lane.
-   -------------------------------------------------------------------- */
-
-.gunWrap {
+/* Holes already in the paper when the visitor arrives. */
+.oldHole {
   position: absolute;
-  inset-inline-end: -6%;
-  inset-block-end: 4%;
-  inline-size: 84%;
-  aspect-ratio: 220 / 150;
-  pointer-events: none;
-  transform-origin: 22% 78%;
-  will-change: transform, opacity;
-  z-index: 2;
-}
-:global(html[dir="rtl"]) .gunWrap {
-  inset-inline-end: auto;
-  inset-inline-start: -6%;
-  transform: scaleX(-1);
-  transform-origin: 78% 78%;
-}
-
-/* The flash at the muzzle. Sits at the muzzle point of the drawing. */
-.muzzle {
-  position: absolute;
-  inset-block-start: 22.6%;
-  inset-inline-start: 89%;
-  inline-size: 34%;
+  width: 4.6%;
   aspect-ratio: 1;
   translate: -50% -50%;
-  pointer-events: none;
-  opacity: 0;
-  background:
-    radial-gradient(circle,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(180, 220, 255, 0.6) 22%,
-      rgba(46, 144, 245, 0.28) 44%,
-      transparent 70%);
-  mix-blend-mode: screen;
-  will-change: opacity, transform;
-}
-
-/* The light the shot throws back into the room. */
-.fireGlow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(ellipse 60% 40% at 62% 62%,
-    rgba(150, 200, 255, 0.34), transparent 62%);
-  mix-blend-mode: screen;
-  will-change: opacity;
-  z-index: 1;
+  border-radius: 50%;
+  background: #0A0F1A;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.85),
+    0 0 0 0.7px rgba(255, 255, 255, 0.34);
+  opacity: 0.75;
 }

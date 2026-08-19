@@ -109,13 +109,30 @@ reduced-motion helpers.
 
 | # | Section | Idea |
 | --- | --- | --- |
-| 01 | Hero | Opens on a pistol held on the line, no text. It fires, the round is tracked down the lane and punches the paper, and only then does the wordmark arrive. Two more rounds follow as the camera closes, then the bullseye becomes the doorway |
+| 01 | Hero | A round sits close to the camera in a real CSS-3D lane. Scroll sends it downrange and drives the camera after it; it punches the paper, then the bullseye opens into the next section |
 | 02 | Intro | Editorial assembly — rule, then lines, then copy, over a parallaxing plate |
 | 03 | Ranges | Pinned panels stack; the incoming lane rises over the outgoing one |
 | 04 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
 | 05 | First visit | A round travels a rail, lighting each step of the session as it passes |
 | 06 | Visit | Mechanical — digits roll, rules grow, address reveals line by line |
 | 07 | Contact | Panel rises over a photographic backdrop; tracking closes; the mark lands last |
+
+### The round
+
+It is drawn **over** the lane, not inside it, and its perspective falloff is
+applied by hand (`scale = 1 / (1 + t * depth)`, offset by `dropPx * scale` so it
+converges on the vanishing point). Two reasons it cannot live in the 3D scene:
+
+- An object in the scene can never appear larger than its own world size at
+  z <= 0, and anything big enough to read close to the camera is taller than
+  the lane, so the ceiling plane cuts straight through it.
+- The camera accelerates down the lane. Any eased start on the round lets the
+  camera overtake it, at which point it crosses the camera plane and blows up
+  across the frame. Its travel is linear, which is both correct for a round
+  and what keeps it ahead.
+
+Everything is a pure function of the travel value, so scrubbing backwards
+retraces exactly the same path.
 
 ### The hero lane
 
@@ -135,6 +152,14 @@ Three details that will bite if you edit it:
   perspective an object scales by `p / (p - z)`; stopping at the target plane tops out
   near half the screen width. The rig is anchored at `top: 42%`, on the perspective
   origin, so the bullseye stays locked to the portal centre at every scale.
+
+### The handover out of the hero
+
+The portal shows the same photograph, crop and scale that the Intro section
+opens at. That is the one place an image appears twice on the site, and it is
+deliberate: it is what makes passing through the bullseye continuous rather
+than the hero simply stopping. If you change the Intro plate, change the portal
+with it — a mismatch in `position` or starting `scale` shows as a jump.
 
 ### Text reveals run both ways
 

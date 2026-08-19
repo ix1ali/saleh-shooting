@@ -31,14 +31,16 @@ export default function IntroSection() {
       const el = root.current;
       if (!el || prefersReducedMotion()) return;
 
-      /* Ground settles from an over-scale as the section is read, then keeps
-         drifting against the page for the rest of the scroll. */
+      /* The plate starts at exactly the size the hero portal handed it over
+         at, then pushes in as the section is read. Starting over-scaled put a
+         visible jump at the handover, because the portal was showing 1.0 and
+         the section began at 1.12. */
       if (groundScale.current) {
         gsap.fromTo(
           groundScale.current,
-          { scale: 1.12 },
+          { scale: 1 },
           {
-            scale: 1,
+            scale: 1.1,
             ease: "none",
             scrollTrigger: { trigger: el, start: "top bottom", end: "center center", scrub: SCRUB.soft },
           }

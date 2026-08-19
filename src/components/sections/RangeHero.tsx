@@ -8,7 +8,8 @@ import { brand, hero as heroCopy, ui } from "@/data/site";
 import { getOpenState, type OpenState } from "@/lib/hours";
 import MaskHeading from "@/components/motion/MaskHeading";
 import TargetRings from "@/components/motion/TargetRings";
-import Sidearm from "@/components/visual/Sidearm";
+import Round from "@/components/visual/Round";
+import Photo from "@/components/visual/Photo";
 import styles from "./RangeHero.module.css";
 
 /* -------------------------------------------------------------------------
@@ -52,21 +53,34 @@ const MARKERS = [900, 1800, 2700];
  * Each round starts just in front of the camera wherever the camera happens to
  * be, so it always reads as being fired from where the visitor is standing.
  */
-const SHOTS = [
-  { at: 0.05, dur: 0.075, hole: { x: 47.5, y: 47 } },
-  { at: 0.3, dur: 0.055, hole: { x: 52, y: 51.5 } },
-  { at: 0.46, dur: 0.05, hole: { x: 46.5, y: 52.5 } },
-];
-
 /**
- * Where a round starts, relative to the lane centre, in 3D units.
+ * The round.
  *
- * The muzzle sits low and right of frame, so a round leaves from there and
- * converges on the target as it travels. Perspective does most of that
- * convergence by itself; the rest is interpolated so every round lands on the
- * bullseye rather than near it.
+ * It starts close to the camera and travels the length of the lane as you
+ * scroll, so it is the thing your finger is actually moving. Its world
+ * position is a pure function of the travel value — never of the live camera
+ * position — so scrubbing backwards retraces exactly the same path.
+ *
+ * The camera chases it, which is why it holds its size for the first part of
+ * the flight and only pulls away once it has the speed.
  */
-const MUZZLE = { x: 78, y: 66 };
+const ROUND = {
+  /* How hard it recedes. Higher shrinks it faster over the same travel. */
+  depth: 15,
+  /* How far below the vanishing point it sits at full size, in screen px.
+     Negative lifts it clear of the display type underneath. */
+  dropPx: -12,
+  /* The travel window as a fraction of the hero timeline. */
+  from: 0.04,
+  to: 0.58,
+};
+
+/* Holes already in the paper when you arrive. The round you fire adds the
+   one in the centre. */
+const OLD_HOLES = [
+  { x: 41, y: 55 },
+  { x: 57, y: 43 },
+];
 
 const INITIAL: OpenState = { open: null, today: null, boundary: null, now: null };
 
@@ -102,31 +116,13 @@ export default function RangeHero() {
 
       const cam = { n: 0, scene: 0.7, lights: 0.6, portal: 0, rings: 0, ringScale: 0.05 };
       /* One travel value and one hole value per shot. */
-      const shot = SHOTS.map(() => ({ t: 0, hole: 0, flash: 0 }));
-      const gunFlash = { v: 0 };
+      const round = { t: 0, hole: 0, flash: 0 };
 
-      const tracers = SHOTS.map((_, i) =>
-        stage.querySelector<HTMLElement>(`[data-tracer="${i}"]`)
-      );
-      const holes = SHOTS.map((_, i) => stage.querySelector<HTMLElement>(`[data-hole="${i}"]`));
+      const roundEl = stage.querySelector<HTMLElement>(`.${styles.round}`);
+      const holeEl = stage.querySelector<HTMLElement>(`.${styles.hole}`);
       const impact = stage.querySelector<HTMLElement>(`.${styles.impact}`);
-      const gun = stage.querySelector<HTMLElement>(`.${styles.gunWrap}`);
-      const muzzleFlash = stage.querySelector<HTMLElement>(`.${styles.muzzle}`);
-      const fireGlow = stage.querySelector<HTMLElement>(`.${styles.fireGlow}`);
 
-      /* The wordmark starts hidden. The shot is what puts it on screen. */
       const hud = stage.querySelector<HTMLElement>(`.${styles.hud}`);
-      const hudLines = stage.querySelectorAll<HTMLElement>(
-        `.${styles.wordmark} [data-line]`
-      );
-      const hudRest = [
-        stage.querySelector(`.${styles.eyebrow}`),
-        stage.querySelector(`.${styles.support}`),
-        stage.querySelector(`.${styles.facts}`),
-      ].filter(Boolean) as HTMLElement[];
-      gsap.set(hud, { autoAlpha: 0 });
-      gsap.set(hudLines, { yPercent: 112 });
-      gsap.set(hudRest, { autoAlpha: 0 });
 
       const apply = () => {
         set("--camN", cam.n.toFixed(1));
@@ -139,38 +135,26 @@ export default function RangeHero() {
         /* Each round flies from just ahead of the camera to the target face.
            Recomputing the start from the live camera position is what keeps
            it leaving from the shooter rather than from a fixed point. */
-        const startZ = -(cam.n + 100);
-        let flash = 0;
-        shot.forEach((sh, i) => {
-          const el = tracers[i];
-          if (el) {
-            if (sh.t > 0 && sh.t < 1) {
-              const z = startZ + (LANE.targetZ + 12 - startZ) * sh.t;
-              /* Converge on the lane centre as the round travels, so it
-                 leaves the muzzle and lands on the bullseye. */
-              const lat = (1 - sh.t) * (1 - sh.t);
-              const x = MUZZLE.x * lat;
-              const y = MUZZLE.y * lat;
-              el.style.transform =
-                `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px)`;
-              el.style.opacity = String(Math.min(1, (1 - sh.t) * 3));
-            } else {
-              el.style.opacity = "0";
-            }
-          }
-          const h = holes[i];
-          if (h) h.style.opacity = sh.hole.toFixed(3);
-          flash = Math.max(flash, sh.flash);
-        });
-        if (muzzleFlash) {
-          muzzleFlash.style.opacity = gunFlash.v.toFixed(3);
-          muzzleFlash.style.transform =
-            `translate(-50%, -50%) scale(${(0.55 + gunFlash.v * 0.8).toFixed(3)})`;
+        if (roundEl) {
+          const t = round.t;
+          /* Hyperbolic falloff, the same shape real perspective gives:
+             scale = 1 / (1 + t * depth). Everything is a pure function of the
+             travel value, so scrubbing back retraces the path exactly. */
+          const scale = 1 / (1 + t * ROUND.depth);
+          /* Offsetting by the scaled distance is what makes it converge on
+             the vanishing point instead of sliding to it in a straight line. */
+          const y = ROUND.dropPx * scale;
+          const spin = t * 22;
+          roundEl.style.transform =
+            `translate(-50%, -50%) translate(0, ${y.toFixed(1)}px) ` +
+            `scale(${scale.toFixed(4)}) rotate(${spin.toFixed(2)}deg)`;
+          roundEl.style.opacity = t >= 1 ? "0" : String(Math.min(1, (1 - t) * 9));
         }
-        if (fireGlow) fireGlow.style.opacity = (gunFlash.v * 0.9).toFixed(3);
+        if (holeEl) holeEl.style.opacity = round.hole.toFixed(3);
         if (impact) {
-          impact.style.opacity = flash.toFixed(3);
-          impact.style.transform = `translate(-50%, -50%) scale(${(0.5 + flash * 0.9).toFixed(3)})`;
+          impact.style.opacity = round.flash.toFixed(3);
+          impact.style.transform =
+            `translate(-50%, -50%) scale(${(0.5 + round.flash * 0.9).toFixed(3)})`;
         }
       };
       apply();
@@ -194,31 +178,31 @@ export default function RangeHero() {
         .to(cam, { lights: 1, duration: 0.14, ease: "power2.inOut" }, 0.01)
         .to(cam, { n: 190, duration: 0.15 }, 0);
 
-      /* The shot. The pistol settles into frame, fires, kicks, and is lowered
-         again once the round is away. */
-      if (gun) {
-        /* Held on target from the very first frame: the opening image is a
-           shooter on the line, not an empty corridor. */
-        gsap.set(gun, { yPercent: 0, autoAlpha: 1, rotate: 0 });
-        tl.to(gun, { yPercent: -13, rotate: -8, duration: 0.016, ease: "power2.out" }, 0.05)
-          .to(gun, { yPercent: 0, rotate: 0, duration: 0.08, ease: "elastic.out(1, 0.5)" }, 0.066)
-          .to(gun, { yPercent: 46, autoAlpha: 0, duration: 0.07, ease: "power2.in" }, 0.18);
-      }
-
-      tl.to(gunFlash, { v: 1, duration: 0.008 }, 0.05)
-        .to(gunFlash, { v: 0, duration: 0.05, ease: "power2.out" }, 0.058);
-
       /* 0.15 to 0.45 : the advance. */
       tl.to(cam, { n: 1600, duration: 0.3 }, 0.15);
 
-      /* The wordmark is put on screen by the shot, once the round has landed. */
-      tl.to(hud, { autoAlpha: 1, duration: 0.05 }, 0.14)
-        .to(hudLines, { yPercent: 0, duration: 0.085, ease: "expo.out", stagger: 0.02 }, 0.145)
-        .to(hudRest, { autoAlpha: 1, duration: 0.06, stagger: 0.015, ease: "power3.out" }, 0.175);
+      /* The type is on screen from the first frame and clears once, as the
+         camera commits to the lane. Nothing arrives mid-scroll. */
+      tl.to(stage.querySelector(`.${styles.cue}`), { autoAlpha: 0, y: 24, duration: 0.05 }, 0.06)
+        .to(hud, { autoAlpha: 0, y: -52, scale: 0.965, duration: 0.16 }, 0.2);
 
-      /* And clears again as the camera commits to the lane. */
-      tl.to(stage.querySelector(`.${styles.cue}`), { autoAlpha: 0, y: 24, duration: 0.05 }, 0.1)
-        .to(hud, { autoAlpha: 0, y: -52, scale: 0.965, duration: 0.14 }, 0.36);
+      /* The round runs the length of the lane across half the hero, so it is
+         moving with the finger rather than firing on a cue. It accelerates
+         away once it has the speed. */
+      /* Linear, and deliberately so. An eased start looks better in
+         isolation but lets the camera — which accelerates down the lane —
+         overtake the round, at which point it passes through the camera plane
+         and blows up across the frame. A round travels at a constant speed
+         anyway, and constant speed is what keeps it ahead. */
+      tl.fromTo(
+        round,
+        { t: 0 },
+        { t: 1, duration: ROUND.to - ROUND.from, ease: "none" },
+        ROUND.from
+      );
+      tl.to(round, { hole: 1, duration: 0.015 }, ROUND.to);
+      tl.to(round, { flash: 1, duration: 0.012 }, ROUND.to)
+        .to(round, { flash: 0, duration: 0.06, ease: "power2.out" }, ROUND.to + 0.012);
 
       /* 0.45 → 1.00 : the run-in. Apparent size grows as 1 / (3500 - camN),
          so the travel is split and the last leg decelerates, keeping the
@@ -226,16 +210,6 @@ export default function RangeHero() {
       tl.to(cam, { n: 2620, duration: 0.27 }, 0.45)
         .to(cam, { n: 3150, duration: 0.16 }, 0.72)
         .to(cam, { n: CAM_END, duration: 0.12, ease: "power2.out" }, 0.88);
-
-      /* Three rounds go downrange while the camera is closing. The paper
-         keeps every hole, so the target carries a group by the time it fills
-         the frame. */
-      SHOTS.forEach((cfg, i) => {
-        tl.fromTo(shot[i], { t: 0 }, { t: 1, duration: cfg.dur, ease: "power1.in" }, cfg.at);
-        tl.to(shot[i], { hole: 1, duration: 0.012 }, cfg.at + cfg.dur);
-        tl.to(shot[i], { flash: 1, duration: 0.01 }, cfg.at + cfg.dur);
-        tl.to(shot[i], { flash: 0, duration: 0.05, ease: "power2.out" }, cfg.at + cfg.dur + 0.01);
-      });
 
       /* The bullseye becomes the doorway. */
       tl.to(cam, { portal: 1, duration: 0.16, ease: "power2.in" }, 0.84)
@@ -340,13 +314,6 @@ export default function RangeHero() {
               />
             ))}
 
-            {/* Rounds in flight. They sit in the camera space, so the
-                perspective shrinks them as they travel rather than the size
-                being animated. */}
-            {SHOTS.map((_, i) => (
-              <div key={`tracer-${i}`} data-tracer={i} className={styles.tracer} />
-            ))}
-
             {/* The target grows purely through perspective as the camera
                 closes on it. Its scale is never animated directly. */}
             <div className={styles.targetRig}>
@@ -361,14 +328,16 @@ export default function RangeHero() {
                     tone="ink"
                     className={styles.paperRings}
                   />
-                  {SHOTS.map((cfg, i) => (
+                  {/* Already in the paper when you arrive. */}
+                  {OLD_HOLES.map((h, i) => (
                     <span
-                      key={`hole-${i}`}
-                      data-hole={i}
-                      className={styles.hole}
-                      style={{ left: `${cfg.hole.x}%`, top: `${cfg.hole.y}%` }}
+                      key={`old-${i}`}
+                      className={styles.oldHole}
+                      style={{ left: `${h.x}%`, top: `${h.y}%` }}
                     />
                   ))}
+                  {/* Yours. */}
+                  <span className={styles.hole} style={{ left: "50%", top: "50%" }} />
                   <span className={styles.impact} aria-hidden="true" />
                 </div>
               </div>
@@ -376,11 +345,15 @@ export default function RangeHero() {
           </div>
         </div>
 
-        <div className={styles.fireGlow} aria-hidden="true" />
-
-        <div className={styles.gunWrap}>
-          <Sidearm />
-          <span className={styles.muzzle} aria-hidden="true" />
+        {/* The round in flight.
+            It is drawn over the lane rather than inside it. An object living
+            in the 3D scene can never appear larger than its own world size,
+            and anything big enough to read close to the camera is taller than
+            the lane itself, so the ceiling plane cuts through it. Here the
+            perspective falloff is applied directly instead, and it converges
+            on the vanishing point exactly as the geometry does. */}
+        <div className={styles.round}>
+          <Round />
         </div>
 
         <div className={styles.haze} aria-hidden="true" />
@@ -402,7 +375,9 @@ export default function RangeHero() {
             as="h1"
             size="mega"
             lines={nameLines}
-            trigger="none"
+            trigger="mount"
+            delay={0.35}
+            stagger={0.05}
             className={styles.wordmark}
           />
 
@@ -432,8 +407,15 @@ export default function RangeHero() {
           bullseye={false}
           className={styles.portalRings}
         />
+        {/* The doorway opens onto exactly what the Intro section shows, so
+            the two are continuous: the visitor passes through the bullseye
+            into the next room rather than the hero simply ending. This is the
+            one place the same photograph appears twice, and it is the whole
+            point of the transition. */}
         <div className={styles.portal}>
-          <div className={styles.portalInner} />
+          <div className={styles.portalInner}>
+            <Photo name="range" alt="" grade="heavy" position="center 42%" />
+          </div>
         </div>
       </div>
     </section>
