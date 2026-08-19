@@ -1,0 +1,511 @@
+/* =========================================================================
+   CINEMATIC INTRO
+   A fixed overlay that owns the screen until the sequence finishes. The page
+   is already rendered underneath it, so the bullet hole is not a picture of
+   the site — punching the mask through this layer reveals the real first
+   section behind it.
+   ====================================================================== */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #04070E;
+  overflow: hidden;
+  /* The hole. Driven by --holeR; at 0 the layer is solid. */
+  -webkit-mask-image: radial-gradient(
+    circle at var(--holeX, 50%) var(--holeY, 44%),
+    transparent var(--holeR, 0%),
+    #000 calc(var(--holeR, 0%) + var(--holeEdge, 0.6%))
+  );
+  mask-image: radial-gradient(
+    circle at var(--holeX, 50%) var(--holeY, 44%),
+    transparent var(--holeR, 0%),
+    #000 calc(var(--holeR, 0%) + var(--holeEdge, 0.6%))
+  );
+  will-change: mask-image, opacity;
+}
+
+/* ---- Stage ------------------------------------------------------------- */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  perspective: 300px;
+  perspective-origin: 50% 44%;
+  transform-style: preserve-3d;
+  /* Camera shake and recoil ride on this, separate from the dolly. */
+  will-change: transform;
+}
+
+.camera {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--camZ, 0) * 1px));
+  will-change: transform;
+}
+
+.plane {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  backface-visibility: hidden;
+}
+
+/* ---- Surfaces ---------------------------------------------------------- */
+
+.floor {
+  width: var(--laneW);
+  height: var(--laneLen);
+  transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateY(var(--floorY)) rotateX(90deg);
+  background:
+    linear-gradient(90deg,
+      transparent calc(50% - 0.5px),
+      rgba(226, 238, 255, 0.05) calc(50% - 0.5px),
+      rgba(226, 238, 255, 0.05) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)),
+    linear-gradient(to top,
+      rgba(24, 58, 116, 0.30) 0%,
+      rgba(14, 34, 70, 0.14) 28%,
+      transparent 60%),
+    linear-gradient(to top, #131A26 0%, #0D131E 26%, #080D16 58%, #04070E 100%),
+    #04070E;
+}
+
+.ceiling {
+  width: var(--laneW);
+  height: var(--laneLen);
+  transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateY(var(--ceilY)) rotateX(-90deg);
+  background: linear-gradient(to bottom, #161E2C 0%, #0C121C 54%, #05090F 100%);
+}
+
+/* Walls carry the LED runs the facility is actually lit by. */
+.wall {
+  width: var(--laneLen);
+  height: var(--laneH);
+  background:
+    linear-gradient(to bottom,
+      transparent 27%,
+      rgba(58, 140, 235, 0.09) 33%,
+      rgba(150, 205, 255, 0.92) 35.6%,
+      rgba(225, 242, 255, 1) 36.4%,
+      rgba(150, 205, 255, 0.92) 37.2%,
+      rgba(58, 140, 235, 0.09) 41%,
+      transparent 49%),
+    linear-gradient(to bottom,
+      transparent 69%,
+      rgba(46, 120, 210, 0.06) 73%,
+      rgba(70, 150, 235, 0.44) 75%,
+      rgba(46, 120, 210, 0.06) 78%,
+      transparent 83%),
+    repeating-linear-gradient(90deg,
+      rgba(226, 238, 255, 0.05) 0px,
+      rgba(226, 238, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 42px),
+    linear-gradient(to right, #05090F 0%, #101825 44%, #18222F 100%);
+}
+
+.wallL { transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateX(var(--wallNeg)) rotateY(90deg); }
+.wallR { transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateX(var(--wallPos)) rotateY(-90deg); }
+
+/* ---- Booth and lane furniture ------------------------------------------ */
+
+.divider {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 34px;
+  height: 116px;
+  margin-left: -17px;
+  margin-top: -58px;
+  background: linear-gradient(to bottom, #29344A 0%, #18202E 66%, #0B111A 100%);
+  box-shadow: inset 0 1px 0 rgba(226, 238, 255, 0.14);
+}
+
+.dividerEdge {
+  position: absolute;
+  inset-block: 8px;
+  inline-size: 2px;
+  background: linear-gradient(to bottom, transparent, rgba(120, 190, 255, 0.9), transparent);
+}
+
+.light {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 104px;
+  height: 9px;
+  margin-left: -52px;
+  background: linear-gradient(to bottom,
+    rgba(240, 248, 255, 0.95),
+    rgba(190, 220, 255, 0.45) 55%,
+    rgba(120, 190, 255, 0.05));
+}
+
+.pool {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 250px;
+  height: 290px;
+  margin-left: -125px;
+  margin-top: -145px;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(200, 226, 255, 0.12), rgba(60, 130, 220, 0.04) 52%, transparent 74%);
+}
+
+.marker {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: var(--laneW);
+  height: 2px;
+  margin-left: calc(var(--laneW) / -2);
+  background: rgba(226, 238, 255, 0.11);
+}
+
+/* ---- Far end ----------------------------------------------------------- */
+
+.backwall {
+  width: var(--laneW);
+  height: var(--laneH);
+  transform: translate(-50%, -50%) translateZ(var(--backZ));
+  background: radial-gradient(ellipse 62% 68% at 50% 46%, #131C2B 0%, #0A101A 56%, #05090F 100%);
+}
+
+.targetRig {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 190px;
+  height: 230px;
+  margin-left: -95px;
+  margin-top: -115px;
+  transform: translateZ(var(--targetZ));
+}
+
+.hanger {
+  position: absolute;
+  left: 50%;
+  top: -46px;
+  width: 2px;
+  height: 46px;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, rgba(226, 238, 255, 0.05), rgba(226, 238, 255, 0.4));
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  padding: 9px;
+  background: linear-gradient(160deg, #28313F 0%, #141A25 100%);
+  box-shadow: inset 0 0 0 1px rgba(226, 238, 255, 0.12);
+}
+
+.paper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background:
+    repeating-linear-gradient(102deg,
+      rgba(0, 0, 0, 0.025) 0px, rgba(0, 0, 0, 0.025) 0.5px, transparent 0.5px, transparent 2px),
+    radial-gradient(ellipse 80% 80% at 42% 34%, #FFFFFF 0%, #E9EEF5 62%, #C4CDDA 100%);
+  /* Deformation at impact: the sheet buckles around the strike. */
+  transform: scale(var(--paperPunch, 1));
+  will-change: transform;
+}
+
+.paperRings { width: 84%; height: 84%; }
+
+.oldHole {
+  position: absolute;
+  width: 4.6%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: #0A0F1A;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.85), 0 0 0 0.7px rgba(255, 255, 255, 0.3);
+  opacity: 0.7;
+}
+
+/* The strike: a torn opening that grows before the mask takes over. */
+.tear {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: #05090F;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.9), 0 0 22px 6px rgba(160, 210, 255, 0.35);
+  opacity: 0;
+  transform: scale(var(--tear, 0));
+  will-change: transform, opacity;
+}
+
+/* ---- The projectile ---------------------------------------------------- */
+
+/* Tracked by the camera, so it holds near the centre while the room rushes
+   past it. Drawn small and sharp: it has to stay readable at speed. */
+.round {
+  position: absolute;
+  /* Off the lane axis on purpose: the camera is travelling alongside the
+     round, so it sits beside the vanishing point with the target beyond it.
+     Dead centre and it simply disappears behind the paper. */
+  left: 63%;
+  top: 55%;
+  width: 16px;
+  height: 36px;
+  margin-left: -8px;
+  margin-top: -18px;
+  border-radius: 40% 40% 46% 46% / 58% 58% 42% 42%;
+  background:
+    linear-gradient(100deg, #6B7B90 0%, #E8F1FB 34%, #FFFFFF 46%, #9FB1C6 66%, #3E4B5D 100%);
+  box-shadow: 0 0 18px 5px rgba(150, 205, 255, 0.7), 0 0 44px 12px rgba(70, 150, 235, 0.3);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* The wake behind it, stretched by velocity. */
+.roundTrail {
+  position: absolute;
+  left: 63%;
+  top: 55%;
+  width: 6px;
+  height: 190px;
+  margin-left: -3px;
+  margin-top: -6px;
+  background: linear-gradient(to bottom,
+    rgba(214, 236, 255, 0.5) 0%,
+    rgba(120, 190, 255, 0.16) 34%,
+    transparent 78%);
+  filter: blur(5px);
+  opacity: 0;
+  transform-origin: 50% 0%;
+  will-change: transform, opacity;
+}
+
+/* ---- Light and atmosphere ---------------------------------------------- */
+
+/* The flash at the muzzle, and the light it throws onto the surfaces. */
+.muzzle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 40% 26% at 50% 78%,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(190, 225, 255, 0.55) 24%,
+      rgba(70, 150, 235, 0.18) 48%,
+      transparent 74%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+.surfaceFlash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(to top, rgba(200, 226, 255, 0.42), rgba(120, 180, 245, 0.12) 42%, transparent 72%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+/* Radial smear from the vanishing point. Kept low: the geometry does most of
+   the work, this only sells the last of the velocity. */
+.streak {
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-conic-gradient(from 0deg at 50% 44%,
+    rgba(190, 220, 255, 0) 0deg,
+    rgba(190, 220, 255, 0.055) 0.7deg,
+    rgba(190, 220, 255, 0) 1.6deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 44%, transparent 14%, #000 62%);
+  mask-image: radial-gradient(circle at 50% 44%, transparent 14%, #000 62%);
+  mix-blend-mode: screen;
+  will-change: opacity, transform;
+}
+
+/* Depth of field: the frame edges soften as speed builds. */
+.dof {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  -webkit-mask-image: radial-gradient(ellipse 44% 34% at 50% 44%, transparent 40%, #000 100%);
+  mask-image: radial-gradient(ellipse 44% 34% at 50% 44%, transparent 40%, #000 100%);
+  will-change: opacity;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 92% 72% at 50% 44%, transparent 40%, rgba(4, 7, 14, 0.7) 100%),
+    linear-gradient(to bottom, rgba(4, 7, 14, 0.5) 0%, transparent 22%, transparent 62%, rgba(4, 7, 14, 0.8) 100%);
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background: repeating-linear-gradient(0deg,
+    rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px);
+  mix-blend-mode: overlay;
+}
+
+/* The white bloom as the camera passes through the paper. */
+.throughFlash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 44%,
+    rgba(255, 255, 255, 0.95) 0%, rgba(190, 225, 255, 0.5) 30%, transparent 68%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+/* ---- SHOOT control ------------------------------------------------------ */
+
+.controls {
+  position: absolute;
+  z-index: 4;
+  inset-inline: 0;
+  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 15svh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  will-change: transform, opacity;
+}
+
+.shoot {
+  position: relative;
+  inline-size: 108px;
+  block-size: 108px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* Follows the pointer a little, then settles. */
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(var(--ps, 1));
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Brushed metal disc. */
+.shootFace {
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  background:
+    linear-gradient(150deg, rgba(226, 238, 255, 0.16) 0%, rgba(226, 238, 255, 0.03) 42%, rgba(4, 7, 14, 0.2) 100%),
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.14), transparent 58%);
+  border: 1px solid rgba(226, 238, 255, 0.5);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: border-color 0.4s var(--ease-out), background-color 0.4s var(--ease-out);
+}
+
+.shoot:active .shootFace { border-color: #FFFFFF; }
+
+/* The ring that reports readiness, then invites. */
+.shootRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(226, 238, 255, 0.22);
+}
+
+.shootProgress {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.shootProgress circle {
+  fill: none;
+  stroke: rgba(226, 238, 255, 0.85);
+  stroke-width: 1;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s var(--ease-out);
+}
+
+/* A single slow pulse once armed. Never more than one at a time. */
+.shootPulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(160, 210, 255, 0.55);
+  opacity: 0;
+}
+.shoot[data-ready="true"] .shootPulse { animation: shootPulse 3.4s var(--ease-out) infinite; }
+
+@keyframes shootPulse {
+  0%   { transform: scale(1);    opacity: 0.55; }
+  70%  { transform: scale(1.42); opacity: 0; }
+  100% { transform: scale(1.42); opacity: 0; }
+}
+
+.shootLabel {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+:global(html[lang="ar"]) .shootLabel { letter-spacing: 0.06em; text-indent: 0; font-family: var(--font-arabic); }
+
+.shoot[data-ready="false"] { pointer-events: none; }
+.shoot[data-ready="false"] .shootLabel { color: rgba(226, 238, 255, 0.4); }
+
+/* ---- Skip --------------------------------------------------------------- */
+
+.skip {
+  position: absolute;
+  z-index: 4;
+  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  inset-inline-end: var(--gutter);
+  padding: 10px 4px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(226, 238, 255, 0.42);
+  transition: color 0.3s var(--ease-out);
+}
+.skip:active { color: #FFFFFF; }
+:global(html[lang="ar"]) .skip { letter-spacing: 0.04em; text-transform: none; }
+
+/* ---- Quiet brand -------------------------------------------------------- */
+
+.mark {
+  position: absolute;
+  z-index: 4;
+  inset-block-start: calc(env(safe-area-inset-top, 0px) + 22px);
+  inset-inline-start: var(--gutter);
+  inline-size: 26px;
+  block-size: 26px;
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shoot[data-ready="true"] .shootPulse { animation: none; }
+  .shoot { transition: none; }
+}

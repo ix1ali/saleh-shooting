@@ -19,6 +19,14 @@
 @property --ringsOpacity { syntax: "<number>"; inherits: true;  initial-value: 0; }
 @property --ringsScale   { syntax: "<number>"; inherits: true;  initial-value: 0.06; }
 @property --draw     { syntax: "<number>";     inherits: true;  initial-value: 0; }
+
+/* The opening sequence. --holeR is the radius of the hole punched through the
+   intro layer; the rest drive the strike on the paper. */
+@property --camZ       { syntax: "<number>";     inherits: true;  initial-value: 0; }
+@property --holeR      { syntax: "<percentage>"; inherits: true;  initial-value: 0%; }
+@property --holeEdge   { syntax: "<percentage>"; inherits: true;  initial-value: 0.6%; }
+@property --tear       { syntax: "<number>";     inherits: true;  initial-value: 0; }
+@property --paperPunch { syntax: "<number>";     inherits: true;  initial-value: 1; }
 @property --p        { syntax: "<number>";     inherits: false; initial-value: 0; }
 @property --progress { syntax: "<number>";     inherits: false; initial-value: 0; }
 

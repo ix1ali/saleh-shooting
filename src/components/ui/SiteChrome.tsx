@@ -48,8 +48,8 @@ export default function SiteChrome() {
 
   useGsap(
     () => {
-      const heroEl = document.querySelector<HTMLElement>('[data-section="hero"]');
-      if (!heroEl) return;
+      const firstEl = document.querySelector<HTMLElement>('[data-section="intro"]');
+      if (!firstEl) return;
 
       /* The bar is present from the first frame — it carries the mark, and the
          top of the hero is otherwise empty. Only the action bar and the
@@ -58,15 +58,10 @@ export default function SiteChrome() {
       gsap.set(bar.current, { autoAlpha: 1, y: 0 });
       gsap.set(quick.current, { autoAlpha: 0, y: 34 });
 
-      ScrollTrigger.create({
-        trigger: heroEl,
-        start: "top top",
-        end: "bottom 80%",
-        onEnter: () => setPast(false),
-        onLeave: () => setPast(true),
-        onEnterBack: () => setPast(true),
-        onLeaveBack: () => setPast(false),
-      });
+      /* The chrome is present from the first painted frame of the page now:
+         the cinematic overlay owns the screen before it, so there is no
+         opening sequence left for it to stay out of the way of. */
+      setPast(true);
 
       /* The contact section already presents Message and Directions at full
          size. Keeping the sticky bar up as well puts the same two actions on

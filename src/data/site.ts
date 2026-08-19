@@ -354,13 +354,12 @@ export const contactSection = {
 /* -------------------------------------------------------------------------- */
 
 export const navItems = [
-  { id: "hero", index: "01", label: t("Top", "الأعلى") },
-  { id: "intro", index: "02", label: t("The Complex", "المجمع") },
-  { id: "experiences", index: "03", label: t("Ranges", "الميادين") },
-  { id: "armoury", index: "04", label: t("The Locker", "الخزنة") },
-  { id: "info", index: "05", label: t("Good to Know", "معلومات مفيدة") },
-  { id: "visit", index: "06", label: t("Hours", "المواعيد") },
-  { id: "contact", index: "07", label: t("Contact", "التواصل") },
+  { id: "intro", index: "01", label: t("The Complex", "المجمع") },
+  { id: "experiences", index: "02", label: t("Ranges", "الميادين") },
+  { id: "armoury", index: "03", label: t("The Locker", "الخزنة") },
+  { id: "info", index: "04", label: t("Good to Know", "معلومات مفيدة") },
+  { id: "visit", index: "05", label: t("Hours", "المواعيد") },
+  { id: "contact", index: "06", label: t("Contact", "التواصل") },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -368,7 +367,8 @@ export const navItems = [
 /* -------------------------------------------------------------------------- */
 
 export const ui = {
-  scrollToEnter: t("Scroll", "مرّر"),
+  shoot: t("Shoot", "أطلق"),
+  skip: t("Skip", "تخطٍّ"),
   loading: t("Loading", "جارٍ التحميل"),
   menu: t("Menu", "القائمة"),
   close: t("Close", "إغلاق"),

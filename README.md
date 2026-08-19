@@ -92,6 +92,57 @@ tonal ramps, so the middle of each frame — where the subject is — stays clea
 **Consent:** several photographs show identifiable faces. Confirm you are cleared to
 publish each one before launch.
 
+## 3. The opening sequence
+
+`src/components/hero/` — the signature interaction.
+
+The first frame is the range and one control: **SHOOT**. No heading, no
+paragraph, no scroll label. `IntroGate` decides whether it runs; `CinematicIntro`
+is the sequence itself, code-split so it is not in the bundle the page paints from.
+
+### Why the hole is real
+
+The overlay is `position: fixed` **over a page that is already mounted**. The hole
+is a `mask-image` radial gradient on that overlay driven by `--holeR`. Punching it
+open does not reveal a picture of the site — it reveals the actual first section
+underneath. That is what makes the camera appear to pass through the paper into
+the page, and why there is no cut, fade or dissolve anywhere in the handover.
+
+### One timeline, not five clips
+
+Phases are positions on a single GSAP timeline, so nothing can drift apart:
+
+| t | Phase |
+| --- | --- |
+| 0.00–0.28 | Trigger — muzzle flash (~4 frames), light thrown onto the surfaces, camera recoil and recovery |
+| 0.16–0.55 | The camera catches the round and settles alongside it |
+| 0.20–2.35 | Range travel. Speed comes from the geometry passing, not from drawn speed lines |
+| 2.00–2.95 | Target approach, easing down into the strike |
+| 2.98–3.90 | Impact, the sheet buckles, the tear opens, the mask takes over and the camera goes through |
+
+### Notes for editing it
+
+- **Keep the UI out of `.stage`.** It has `transform-style: preserve-3d`, so any
+  child joins the 3D space and the floor — which extends toward the camera —
+  renders in front of it. That hid the SHOOT control completely.
+- **Depth furniture culls itself in pure CSS**
+  (`calc((depth - 300 - var(--camZ)) / 420)`), so nothing straddles the camera
+  plane. No per-element JavaScript runs per frame.
+- **The camera finishes past the target plane** (`CAM_END`). Under CSS perspective
+  an object cannot exceed its own world size at z <= 0, so stopping at the target
+  tops out near half the screen width.
+- Every animated custom property is registered with `@property` in `globals.css`.
+  Unregistered, GSAP cannot interpolate them and the hole never opens.
+
+### Behaviour
+
+- `prefers-reduced-motion`: trigger, strike, through. No chase.
+- Skip control, and Escape. `sessionStorage` means it plays once per session —
+  never permanently disabled.
+- The control arms itself when fonts land, capped at 1.4s. No percentage loader.
+
+---
+
 ## 3. Motion architecture
 
 Reusable primitives live in `src/components/motion/`. Sections compose them; no section
