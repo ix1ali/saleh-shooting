@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import { SCRUB, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { REVEAL, SCRUB, prefersReducedMotion, useGsap } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import { contact, session, ui } from "@/data/site";
 import MaskHeading from "@/components/motion/MaskHeading";
@@ -48,9 +48,9 @@ export default function SessionSteps() {
           {
             autoAlpha: 1,
             x: 0,
-            duration: 0.7,
+            duration: 0.42,
             ease: "power3.out",
-            scrollTrigger: { trigger: step, start: "top 88%", once: true },
+            scrollTrigger: { trigger: step, ...REVEAL },
           }
         );
       });
@@ -86,9 +86,9 @@ export default function SessionSteps() {
           {
             autoAlpha: 1,
             yPercent: 0,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: { trigger: note, start: "top 90%", once: true },
+            duration: 0.46,
+            ease: "power3.out",
+            scrollTrigger: { trigger: note, ...REVEAL },
           }
         );
       }

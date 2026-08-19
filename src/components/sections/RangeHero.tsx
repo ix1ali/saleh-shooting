@@ -7,8 +7,8 @@ import { useLocale } from "@/lib/locale";
 import { brand, hero as heroCopy, ui } from "@/data/site";
 import { getOpenState, type OpenState } from "@/lib/hours";
 import MaskHeading from "@/components/motion/MaskHeading";
-import ScrollLabel from "@/components/motion/ScrollLabel";
 import TargetRings from "@/components/motion/TargetRings";
+import Sidearm from "@/components/visual/Sidearm";
 import styles from "./RangeHero.module.css";
 
 /* -------------------------------------------------------------------------
@@ -53,10 +53,20 @@ const MARKERS = [900, 1800, 2700];
  * be, so it always reads as being fired from where the visitor is standing.
  */
 const SHOTS = [
-  { at: 0.26, dur: 0.055, hole: { x: 47.5, y: 47 } },
-  { at: 0.4, dur: 0.05, hole: { x: 52, y: 51.5 } },
-  { at: 0.54, dur: 0.045, hole: { x: 46.5, y: 52.5 } },
+  { at: 0.05, dur: 0.075, hole: { x: 47.5, y: 47 } },
+  { at: 0.3, dur: 0.055, hole: { x: 52, y: 51.5 } },
+  { at: 0.46, dur: 0.05, hole: { x: 46.5, y: 52.5 } },
 ];
+
+/**
+ * Where a round starts, relative to the lane centre, in 3D units.
+ *
+ * The muzzle sits low and right of frame, so a round leaves from there and
+ * converges on the target as it travels. Perspective does most of that
+ * convergence by itself; the rest is interpolated so every round lands on the
+ * bullseye rather than near it.
+ */
+const MUZZLE = { x: 78, y: 66 };
 
 const INITIAL: OpenState = { open: null, today: null, boundary: null, now: null };
 
@@ -93,12 +103,30 @@ export default function RangeHero() {
       const cam = { n: 0, scene: 0.7, lights: 0.6, portal: 0, rings: 0, ringScale: 0.05 };
       /* One travel value and one hole value per shot. */
       const shot = SHOTS.map(() => ({ t: 0, hole: 0, flash: 0 }));
+      const gunFlash = { v: 0 };
 
       const tracers = SHOTS.map((_, i) =>
         stage.querySelector<HTMLElement>(`[data-tracer="${i}"]`)
       );
       const holes = SHOTS.map((_, i) => stage.querySelector<HTMLElement>(`[data-hole="${i}"]`));
       const impact = stage.querySelector<HTMLElement>(`.${styles.impact}`);
+      const gun = stage.querySelector<HTMLElement>(`.${styles.gunWrap}`);
+      const muzzleFlash = stage.querySelector<HTMLElement>(`.${styles.muzzle}`);
+      const fireGlow = stage.querySelector<HTMLElement>(`.${styles.fireGlow}`);
+
+      /* The wordmark starts hidden. The shot is what puts it on screen. */
+      const hud = stage.querySelector<HTMLElement>(`.${styles.hud}`);
+      const hudLines = stage.querySelectorAll<HTMLElement>(
+        `.${styles.wordmark} [data-line]`
+      );
+      const hudRest = [
+        stage.querySelector(`.${styles.eyebrow}`),
+        stage.querySelector(`.${styles.support}`),
+        stage.querySelector(`.${styles.facts}`),
+      ].filter(Boolean) as HTMLElement[];
+      gsap.set(hud, { autoAlpha: 0 });
+      gsap.set(hudLines, { yPercent: 112 });
+      gsap.set(hudRest, { autoAlpha: 0 });
 
       const apply = () => {
         set("--camN", cam.n.toFixed(1));
@@ -111,15 +139,21 @@ export default function RangeHero() {
         /* Each round flies from just ahead of the camera to the target face.
            Recomputing the start from the live camera position is what keeps
            it leaving from the shooter rather than from a fixed point. */
-        const muzzle = -(cam.n + 120);
+        const startZ = -(cam.n + 100);
         let flash = 0;
         shot.forEach((sh, i) => {
           const el = tracers[i];
           if (el) {
             if (sh.t > 0 && sh.t < 1) {
-              const z = muzzle + (LANE.targetZ + 12 - muzzle) * sh.t;
-              el.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
-              el.style.opacity = String(Math.min(1, (1 - sh.t) * 2.6));
+              const z = startZ + (LANE.targetZ + 12 - startZ) * sh.t;
+              /* Converge on the lane centre as the round travels, so it
+                 leaves the muzzle and lands on the bullseye. */
+              const lat = (1 - sh.t) * (1 - sh.t);
+              const x = MUZZLE.x * lat;
+              const y = MUZZLE.y * lat;
+              el.style.transform =
+                `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px)`;
+              el.style.opacity = String(Math.min(1, (1 - sh.t) * 3));
             } else {
               el.style.opacity = "0";
             }
@@ -128,6 +162,12 @@ export default function RangeHero() {
           if (h) h.style.opacity = sh.hole.toFixed(3);
           flash = Math.max(flash, sh.flash);
         });
+        if (muzzleFlash) {
+          muzzleFlash.style.opacity = gunFlash.v.toFixed(3);
+          muzzleFlash.style.transform =
+            `translate(-50%, -50%) scale(${(0.55 + gunFlash.v * 0.8).toFixed(3)})`;
+        }
+        if (fireGlow) fireGlow.style.opacity = (gunFlash.v * 0.9).toFixed(3);
         if (impact) {
           impact.style.opacity = flash.toFixed(3);
           impact.style.transform = `translate(-50%, -50%) scale(${(0.5 + flash * 0.9).toFixed(3)})`;
@@ -154,16 +194,31 @@ export default function RangeHero() {
         .to(cam, { lights: 1, duration: 0.14, ease: "power2.inOut" }, 0.01)
         .to(cam, { n: 190, duration: 0.15 }, 0);
 
-      /* 0.15 → 0.45 : the advance. */
+      /* The shot. The pistol settles into frame, fires, kicks, and is lowered
+         again once the round is away. */
+      if (gun) {
+        /* Held on target from the very first frame: the opening image is a
+           shooter on the line, not an empty corridor. */
+        gsap.set(gun, { yPercent: 0, autoAlpha: 1, rotate: 0 });
+        tl.to(gun, { yPercent: -13, rotate: -8, duration: 0.016, ease: "power2.out" }, 0.05)
+          .to(gun, { yPercent: 0, rotate: 0, duration: 0.08, ease: "elastic.out(1, 0.5)" }, 0.066)
+          .to(gun, { yPercent: 46, autoAlpha: 0, duration: 0.07, ease: "power2.in" }, 0.18);
+      }
+
+      tl.to(gunFlash, { v: 1, duration: 0.008 }, 0.05)
+        .to(gunFlash, { v: 0, duration: 0.05, ease: "power2.out" }, 0.058);
+
+      /* 0.15 to 0.45 : the advance. */
       tl.to(cam, { n: 1600, duration: 0.3 }, 0.15);
 
-      /* The type clears as the camera commits to the lane. */
-      tl.to(stage.querySelector(`.${styles.cue}`), { autoAlpha: 0, y: 24, duration: 0.06 }, 0.06)
-        .to(
-          stage.querySelector(`.${styles.hud}`),
-          { autoAlpha: 0, y: -52, scale: 0.965, duration: 0.16 },
-          0.17
-        );
+      /* The wordmark is put on screen by the shot, once the round has landed. */
+      tl.to(hud, { autoAlpha: 1, duration: 0.05 }, 0.14)
+        .to(hudLines, { yPercent: 0, duration: 0.085, ease: "expo.out", stagger: 0.02 }, 0.145)
+        .to(hudRest, { autoAlpha: 1, duration: 0.06, stagger: 0.015, ease: "power3.out" }, 0.175);
+
+      /* And clears again as the camera commits to the lane. */
+      tl.to(stage.querySelector(`.${styles.cue}`), { autoAlpha: 0, y: 24, duration: 0.05 }, 0.1)
+        .to(hud, { autoAlpha: 0, y: -52, scale: 0.965, duration: 0.14 }, 0.36);
 
       /* 0.45 → 1.00 : the run-in. Apparent size grows as 1 / (3500 - camN),
          so the travel is split and the last leg decelerates, keeping the
@@ -321,23 +376,33 @@ export default function RangeHero() {
           </div>
         </div>
 
+        <div className={styles.fireGlow} aria-hidden="true" />
+
+        <div className={styles.gunWrap}>
+          <Sidearm />
+          <span className={styles.muzzle} aria-hidden="true" />
+        </div>
+
         <div className={styles.haze} aria-hidden="true" />
         <div className={styles.vignette} aria-hidden="true" />
         <div className={styles.grain} aria-hidden="true" />
 
         {/* ---- Type ---------------------------------------------------- */}
         <div className={styles.hud}>
-          <ScrollLabel className={styles.eyebrow} tone="mist" delay={0.35}>
-            {T(brand.city)}
-          </ScrollLabel>
+          {/* Driven by the hero timeline rather than ScrollLabel, which
+              carries its own scroll trigger and would fight it: inside a
+              sticky section that trigger never leaves the frame, so the two
+              ended up in opposite states. */}
+          <span className={styles.eyebrow}>
+            <span className={styles.eyebrowRule} aria-hidden="true" />
+            <span className={`label ${styles.eyebrowText}`}>{T(brand.city)}</span>
+          </span>
 
           <MaskHeading
             as="h1"
             size="mega"
             lines={nameLines}
-            trigger="mount"
-            delay={0.5}
-            stagger={0.1}
+            trigger="none"
             className={styles.wordmark}
           />
 

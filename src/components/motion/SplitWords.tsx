@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { EASE, START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { EASE,  prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import styles from "./SplitWords.module.css";
 
@@ -49,30 +49,28 @@ export default function SplitWords({
             autoAlpha: 1,
             duration: 0.26,
             stagger: 0.03,
-            scrollTrigger: { trigger: el, start: START, once: true },
+            scrollTrigger: { trigger: el, ...REVEAL },
           }
         );
         return;
       }
 
+      /* No blur pass. Animating a filter on type is both the slowest thing
+         here and the one that makes a reveal look mushy. */
       const from =
         variant === "lock"
-          ? { yPercent: 40, autoAlpha: 0, filter: "blur(0px)" }
-          : { yPercent: 60, autoAlpha: 0, filter: "blur(9px)" };
+          ? { yPercent: 34, autoAlpha: 0 }
+          : { yPercent: 52, autoAlpha: 0 };
 
       gsap.fromTo(items, from, {
         yPercent: 0,
         autoAlpha: 1,
-        filter: "blur(0px)",
-        duration: variant === "lock" ? 0.7 : 1.0,
-        ease: variant === "lock" ? "power4.out" : EASE.enter,
-        stagger: variant === "lock" ? 0.11 : 0.06,
+        duration: variant === "lock" ? 0.4 : 0.44,
+        ease: variant === "lock" ? "power3.out" : EASE.enter,
+        stagger: variant === "lock" ? 0.05 : 0.032,
         delay,
-        scrollTrigger: { trigger: el, start: START, once: true },
+        scrollTrigger: { trigger: el, ...REVEAL },
         /* Drop the filter entirely once settled so nothing keeps compositing. */
-        onComplete: () => {
-          gsap.set(items, { clearProps: "filter,willChange" });
-        },
       });
     },
     [version, words.join("|"), variant]

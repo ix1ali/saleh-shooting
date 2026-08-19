@@ -104,7 +104,7 @@ export default function ExperienceStory() {
         tl.fromTo(
           panel.querySelector(`.${styles.title}`),
           { yPercent: 108 },
-          { yPercent: 0, duration: span * 0.55, ease: "expo.out" },
+          { yPercent: 0, duration: span * 0.42, ease: "power3.out" },
           at + span * 0.42
         );
         tl.fromTo(

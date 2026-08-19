@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { DUR, EASE, START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { DUR, EASE,  prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import styles from "./MaskHeading.module.css";
 
@@ -34,7 +34,7 @@ export default function MaskHeading({
   as: Tag = "h2",
   className = "",
   delay = 0,
-  stagger = 0.085,
+  stagger = 0.045,
   trigger = "scroll",
   align = "start",
   id,
@@ -58,7 +58,7 @@ export default function MaskHeading({
             duration: 0.28,
             stagger: 0.04,
             scrollTrigger:
-              trigger === "scroll" ? { trigger: el, start: START, once: true } : undefined,
+              trigger === "scroll" ? { trigger: el, ...REVEAL } : undefined,
           }
         );
         return;
@@ -75,7 +75,7 @@ export default function MaskHeading({
           delay,
           scrollTrigger:
             trigger === "scroll"
-              ? { trigger: el, start: START, once: true }
+              ? { trigger: el, ...REVEAL }
               : undefined,
         }
       );

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import styles from "./RollingNumber.module.css";
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -36,7 +36,7 @@ export default function RollingNumber({
       const strips = el.querySelectorAll<HTMLElement>("[data-strip]");
       if (!strips.length) return;
 
-      const st = { trigger: el, start: START, once: true } as const;
+      const st = { trigger: el, ...REVEAL } as const;
 
       if (prefersReducedMotion()) {
         strips.forEach((s) => {
@@ -54,8 +54,8 @@ export default function RollingNumber({
           s,
           /* Start a full wheel early so it reads as a roll, not a jump. */
           { yPercent: -10 * target + 100 },
-          { yPercent: -10 * target, duration: 1.15, ease: "power4.out" },
-          i * 0.085
+          { yPercent: -10 * target, duration: 0.52, ease: "power3.out" },
+          i * 0.04
         );
       });
     },

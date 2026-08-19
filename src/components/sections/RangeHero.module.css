@@ -301,7 +301,21 @@
   will-change: transform, opacity;
 }
 
-.eyebrow { margin-block-end: 16px; }
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block-end: 16px;
+}
+
+.eyebrowRule {
+  flex: 0 0 auto;
+  inline-size: 28px;
+  block-size: 1px;
+  background: var(--rule-strong);
+}
+
+.eyebrowText { white-space: nowrap; }
 
 .wordmark {
   color: var(--bone);
@@ -495,4 +509,61 @@
     0 0 0 0.7px rgba(255, 255, 255, 0.42);
   opacity: 0;
   will-change: opacity, transform;
+}
+
+/* ---- The sidearm in the foreground -------------------------------------
+   Held in the lower-right of the frame, pointed downrange. It recoils when a
+   round leaves and settles back, and it leaves the frame once the camera
+   commits to the lane.
+   -------------------------------------------------------------------- */
+
+.gunWrap {
+  position: absolute;
+  inset-inline-end: -6%;
+  inset-block-end: 4%;
+  inline-size: 84%;
+  aspect-ratio: 220 / 150;
+  pointer-events: none;
+  transform-origin: 22% 78%;
+  will-change: transform, opacity;
+  z-index: 2;
+}
+:global(html[dir="rtl"]) .gunWrap {
+  inset-inline-end: auto;
+  inset-inline-start: -6%;
+  transform: scaleX(-1);
+  transform-origin: 78% 78%;
+}
+
+/* The flash at the muzzle. Sits at the muzzle point of the drawing. */
+.muzzle {
+  position: absolute;
+  inset-block-start: 22.6%;
+  inset-inline-start: 89%;
+  inline-size: 34%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(180, 220, 255, 0.6) 22%,
+      rgba(46, 144, 245, 0.28) 44%,
+      transparent 70%);
+  mix-blend-mode: screen;
+  will-change: opacity, transform;
+}
+
+/* The light the shot throws back into the room. */
+.fireGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse 60% 40% at 62% 62%,
+    rgba(150, 200, 255, 0.34), transparent 62%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+  z-index: 1;
 }

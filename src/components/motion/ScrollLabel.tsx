@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { EASE, START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { EASE,  prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import styles from "./ScrollLabel.module.css";
 
@@ -38,7 +38,7 @@ export default function ScrollLabel({
       const text = el.querySelector<HTMLElement>("[data-text]");
       if (!text) return;
 
-      const st = { trigger: el, start: START, once: true } as const;
+      const st = { trigger: el, ...REVEAL } as const;
 
       if (prefersReducedMotion()) {
         gsap.fromTo([line, text].filter(Boolean), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.26, scrollTrigger: st });
@@ -47,13 +47,13 @@ export default function ScrollLabel({
 
       const tl = gsap.timeline({ scrollTrigger: st, delay });
       if (line) {
-        tl.fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: EASE.inOut });
+        tl.fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 0.36, ease: EASE.inOut });
       }
       tl.fromTo(
         text,
-        { xPercent: -14, autoAlpha: 0 },
-        { xPercent: 0, autoAlpha: 1, duration: 0.7, ease: EASE.enter },
-        line ? "-=0.45" : 0
+        { xPercent: -10, autoAlpha: 0 },
+        { xPercent: 0, autoAlpha: 1, duration: 0.34, ease: EASE.enter },
+        line ? "-=0.22" : 0
       );
     },
     [version, children]

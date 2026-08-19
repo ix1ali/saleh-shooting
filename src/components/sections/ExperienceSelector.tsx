@@ -58,7 +58,7 @@ export default function ExperienceSelector() {
       tl.fromTo(
         current,
         { yPercent: 14, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 0.7, ease: "expo.out" }
+        { yPercent: 0, autoAlpha: 1, duration: 0.4, ease: "power3.out" }
       );
 
       const options = current.querySelectorAll("[data-option]");
@@ -66,7 +66,7 @@ export default function ExperienceSelector() {
         tl.fromTo(
           options,
           { yPercent: 26, autoAlpha: 0 },
-          { yPercent: 0, autoAlpha: 1, duration: 0.6, stagger: 0.055, ease: "power3.out" },
+          { yPercent: 0, autoAlpha: 1, duration: 0.38, stagger: 0.035, ease: "power3.out" },
           0.1
         );
       }
@@ -76,11 +76,11 @@ export default function ExperienceSelector() {
       const ring = current.querySelector(`.${styles.resultRing}`);
       const card = current.querySelector(`.${styles.resultCard}`);
       if (ring && card) {
-        tl.fromTo(ring, { scale: 0.15, autoAlpha: 0 }, { scale: 1, autoAlpha: 0.2, duration: 1.1, ease: "expo.out" }, 0);
+        tl.fromTo(ring, { scale: 0.15, autoAlpha: 0 }, { scale: 1, autoAlpha: 0.2, duration: 0.6, ease: "power3.out" }, 0);
         tl.fromTo(
           card,
           { clipPath: "inset(46% 12% 46% 12%)", autoAlpha: 0 },
-          { clipPath: "inset(0% 0% 0% 0%)", autoAlpha: 1, duration: 0.85, ease: "expo.out" },
+          { clipPath: "inset(0% 0% 0% 0%)", autoAlpha: 1, duration: 0.46, ease: "power3.out" },
           0.14
         );
       }

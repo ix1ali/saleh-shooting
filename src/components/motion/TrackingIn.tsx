@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import styles from "./TrackingIn.module.css";
 
@@ -40,7 +40,7 @@ export default function TrackingIn({
       const inner = el.querySelector<HTMLElement>("[data-track]");
       if (!inner) return;
 
-      const st = { trigger: el, start: START, once: true } as const;
+      const st = { trigger: el, ...REVEAL } as const;
 
       if (prefersReducedMotion()) {
         gsap.fromTo(inner, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.28, scrollTrigger: st });
@@ -51,7 +51,7 @@ export default function TrackingIn({
         gsap.fromTo(
           inner,
           { yPercent: 110 },
-          { yPercent: 0, duration: 1.25, ease: "expo.out", delay, scrollTrigger: st }
+          { yPercent: 0, duration: 0.55, ease: "power3.out", delay, scrollTrigger: st }
         );
         return;
       }
@@ -75,7 +75,7 @@ export default function TrackingIn({
         gsap.fromTo(
           inner,
           { yPercent: 110 },
-          { yPercent: 0, duration: 1.25, ease: "expo.out", delay, scrollTrigger: st }
+          { yPercent: 0, duration: 0.55, ease: "power3.out", delay, scrollTrigger: st }
         );
         return;
       }
@@ -87,8 +87,8 @@ export default function TrackingIn({
           letterSpacing: "-0.03em",
           autoAlpha: 1,
           xPercent: 0,
-          duration: 1.6,
-          ease: "expo.out",
+          duration: 0.72,
+          ease: "power3.out",
           delay,
           scrollTrigger: st,
         }

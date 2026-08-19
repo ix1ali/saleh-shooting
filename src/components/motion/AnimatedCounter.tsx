@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 
 type Props = {
@@ -18,7 +18,7 @@ export default function AnimatedCounter({
   value,
   className = "",
   suffix = "",
-  duration = 2.1,
+  duration = 1.0,
 }: Props) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const { locale } = useLocale();
@@ -41,7 +41,7 @@ export default function AnimatedCounter({
         n: value,
         duration,
         ease: "power3.out",
-        scrollTrigger: { trigger: el, start: START, once: true },
+        scrollTrigger: { trigger: el, ...REVEAL },
         onUpdate: () => {
           el.textContent = fmt.format(Math.round(obj.n)) + suffix;
         },

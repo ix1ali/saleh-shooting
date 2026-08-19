@@ -9,8 +9,8 @@ import { gsap, ScrollTrigger } from "./gsap";
    ---------------------------------------------------------------------- */
 
 export const EASE = {
-  /** Cinematic settle. Long tail, no overshoot. Default for entrances. */
-  enter: "expo.out",
+  /** Quick settle, no overshoot. Default for entrances. */
+  enter: "power3.out",
   /** Slightly firmer entrance for smaller elements. */
   crisp: "power3.out",
   /** Symmetrical, for state changes and exits. */
@@ -19,11 +19,13 @@ export const EASE = {
   exit: "power2.in",
 } as const;
 
+/* Short by design. Long tails on every reveal read as sluggish once there are
+   dozens of them on a page — the motion should be over before it is noticed. */
 export const DUR = {
-  micro: 0.32,
-  fast: 0.55,
-  base: 0.95,
-  slow: 1.35,
+  micro: 0.22,
+  fast: 0.34,
+  base: 0.5,
+  slow: 0.62,
 } as const;
 
 /** Scrub values. Small numbers keep scrubbed motion locked to the finger. */
@@ -34,6 +36,24 @@ export const SCRUB = {
 
 /** Standard "enter the viewport" trigger position for mobile. */
 export const START = "top 82%";
+
+/**
+ * The shared reveal trigger.
+ *
+ * Reveals run in both directions: content animates in as it enters the frame
+ * and back out as it leaves, in either scroll direction. `once: true` would be
+ * cheaper, but it leaves the page feeling like a list of things that have
+ * already happened once you scroll back up through it.
+ *
+ * toggleActions maps to onEnter / onLeave / onEnterBack / onLeaveBack.
+ */
+export const REVEAL = {
+  /* Wide enough that text is only animating at the very edges of the frame.
+     A narrower window makes copy vanish while it is still being read. */
+  start: "top 94%",
+  end: "bottom 6%",
+  toggleActions: "play reverse play reverse",
+} as const;
 
 export const isBrowser = typeof window !== "undefined";
 

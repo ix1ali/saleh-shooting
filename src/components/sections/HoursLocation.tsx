@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import { START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { REVEAL, START, prefersReducedMotion, useGsap } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import { contact, hours, location, ui } from "@/data/site";
 import { getOpenState, type OpenState } from "@/lib/hours";
@@ -50,10 +50,10 @@ export default function HoursLocation() {
         { scaleX: 0 },
         {
           scaleX: 1,
-          duration: 0.8,
+          duration: 0.4,
           ease: "power2.inOut",
-          stagger: 0.12,
-          scrollTrigger: { trigger: `.${styles.blocks}`, start: START, once: true },
+          stagger: 0.06,
+          scrollTrigger: { trigger: `.${styles.blocks}`, ...REVEAL },
         }
       );
 
@@ -62,10 +62,10 @@ export default function HoursLocation() {
         { yPercent: 106 },
         {
           yPercent: 0,
-          duration: 1.1,
-          ease: "expo.out",
-          stagger: 0.08,
-          scrollTrigger: { trigger: `.${styles.location}`, start: START, once: true },
+          duration: 0.5,
+          ease: "power3.out",
+          stagger: 0.04,
+          scrollTrigger: { trigger: `.${styles.location}`, ...REVEAL },
         }
       );
 
@@ -76,9 +76,9 @@ export default function HoursLocation() {
           {
             clipPath: "inset(0% 0% 0% 0%)",
             scale: 1,
-            duration: 1.2,
-            ease: "expo.out",
-            scrollTrigger: { trigger: map, start: "top 90%", once: true },
+            duration: 0.55,
+            ease: "power3.out",
+            scrollTrigger: { trigger: map, ...REVEAL },
           }
         );
       }

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { EASE, SCRUB, START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { EASE, REVEAL, SCRUB, prefersReducedMotion, useGsap } from "@/lib/motion";
 import styles from "./MaskReveal.module.css";
 
 type Shape = "up" | "wipe" | "iris" | "bars";
@@ -59,7 +59,7 @@ export default function MaskReveal({
         gsap.fromTo(
           el,
           { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.3, scrollTrigger: { trigger: el, start: START, once: true } }
+          { autoAlpha: 1, duration: 0.3, scrollTrigger: { trigger: el, ...REVEAL } }
         );
         return;
       }
@@ -74,7 +74,7 @@ export default function MaskReveal({
       }
 
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: el, start: START, once: true },
+        scrollTrigger: { trigger: el, ...REVEAL },
         delay,
       });
       tl.fromTo(

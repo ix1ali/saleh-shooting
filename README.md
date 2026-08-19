@@ -109,7 +109,7 @@ reduced-motion helpers.
 
 | # | Section | Idea |
 | --- | --- | --- |
-| 01 | Hero | A real CSS-3D lane. Scroll drives the camera down it, three rounds go downrange and leave a group in the paper, then the bullseye becomes the doorway |
+| 01 | Hero | Opens on a pistol held on the line, no text. It fires, the round is tracked down the lane and punches the paper, and only then does the wordmark arrive. Two more rounds follow as the camera closes, then the bullseye becomes the doorway |
 | 02 | Intro | Editorial assembly — rule, then lines, then copy, over a parallaxing plate |
 | 03 | Ranges | Pinned panels stack; the incoming lane rises over the outgoing one |
 | 04 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
@@ -135,6 +135,22 @@ Three details that will bite if you edit it:
   perspective an object scales by `p / (p - z)`; stopping at the target plane tops out
   near half the screen width. The rig is anchored at `top: 42%`, on the perspective
   origin, so the bullseye stays locked to the portal centre at every scale.
+
+### Text reveals run both ways
+
+Every reveal uses the shared `REVEAL` config in `src/lib/motion.ts`
+(`toggleActions: "play reverse play reverse"`), so copy animates in as it enters
+the frame and back out as it leaves, in either scroll direction. Two consequences
+worth knowing:
+
+- **No `clearProps` on a reversible tween.** Clearing the transform on complete
+  wipes the from-state and the reverse leg has nothing to go back to.
+- **Do not put a `ScrollLabel` inside a pinned or sticky section.** It carries its
+  own trigger, which never leaves the frame while the section is pinned, so it
+  ends up fighting the section timeline. The hero draws its own label instead.
+
+Durations are deliberately short — around 0.4-0.6s with small staggers. Long
+easing tails read as sluggish once there are dozens of reveals on one page.
 
 ### Two more things worth knowing
 

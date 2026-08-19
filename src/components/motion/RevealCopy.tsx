@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, SplitText } from "@/lib/gsap";
-import { EASE, START, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { EASE,  prefersReducedMotion, useGsap, REVEAL } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import styles from "./RevealCopy.module.css";
 
@@ -42,7 +42,7 @@ export default function RevealCopy({
         gsap.fromTo(
           el,
           { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.3, scrollTrigger: { trigger: el, start: START, once: true } }
+          { autoAlpha: 1, duration: 0.3, scrollTrigger: { trigger: el, ...REVEAL } }
         );
         return;
       }
@@ -66,14 +66,11 @@ export default function RevealCopy({
             {
               yPercent: 0,
               autoAlpha: 1,
-              duration: 0.95,
+              duration: 0.46,
               ease: EASE.enter,
-              stagger: mode === "lines" ? 0.075 : 0.035,
+              stagger: mode === "lines" ? 0.038 : 0.022,
               delay,
-              scrollTrigger: { trigger: el, start: START, once: true },
-              onComplete: () => {
-                gsap.set(targets, { clearProps: "transform,opacity,visibility" });
-              },
+              scrollTrigger: { trigger: el, ...REVEAL },
             }
           );
         },

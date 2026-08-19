@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { SCRUB, prefersReducedMotion, useGsap } from "@/lib/motion";
+import { REVEAL, SCRUB, prefersReducedMotion, useGsap } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import { brand, contactSection, hours } from "@/data/site";
 import { buildActions } from "@/lib/actions";
@@ -35,7 +35,7 @@ export default function ContactCTA() {
         gsap.fromTo(
           [...items, signoff, closing],
           { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.3, stagger: 0.04, scrollTrigger: { trigger: el, start: "top 80%", once: true } }
+          { autoAlpha: 1, duration: 0.3, stagger: 0.04, scrollTrigger: { trigger: el, ...REVEAL } }
         );
         return;
       }
@@ -80,25 +80,25 @@ export default function ContactCTA() {
       }
 
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: `.${styles.actions}`, start: "top 86%", once: true },
+        scrollTrigger: { trigger: `.${styles.actions}`, ...REVEAL },
       });
 
       tl.fromTo(
         items,
         { yPercent: 42, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 0.85, ease: "expo.out", stagger: 0.075 }
+        { yPercent: 0, autoAlpha: 1, duration: 0.44, ease: "power3.out", stagger: 0.045 }
       )
         /* The mark lands last. The page finishes on the logo. */
         .fromTo(
           signoff,
           { yPercent: 26, autoAlpha: 0 },
-          { yPercent: 0, autoAlpha: 1, duration: 0.9, ease: "expo.out" },
+          { yPercent: 0, autoAlpha: 1, duration: 0.46, ease: "power3.out" },
           "-=0.35"
         )
         .fromTo(
           closing,
           { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.7 },
+          { autoAlpha: 1, duration: 0.36 },
           "-=0.5"
         );
     },
