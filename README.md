@@ -119,6 +119,18 @@ reduced-motion helpers.
 
 ### The round
 
+It is laid back with `rotateX(-56deg)` under its own `perspective`, so the nose
+points down the lane instead of at the ceiling. Because the flight axis then runs
+into the screen, the roll the timeline applies is a plain 2D rotation — that *is*
+a roll about the axis of flight.
+
+Speed is real, not decorative: the change in the travel value between frames
+drives a `--speed` custom property, decayed on the ticker so it settles when
+scrolling stops. It feeds a pre-blurred ghost copy sitting behind the sharp one
+and a wake stretching back toward the camera. Scroll hard and it smears; ease off
+and it sharpens. The blur itself is static — only opacity and stretch animate, so
+nothing re-filters per frame.
+
 It is drawn **over** the lane, not inside it, and its perspective falloff is
 applied by hand (`scale = 1 / (1 + t * depth)`, offset by `dropPx * scale` so it
 converges on the vanishing point). Two reasons it cannot live in the 3D scene:

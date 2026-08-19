@@ -119,6 +119,11 @@ export default function RangeHero() {
       const round = { t: 0, hole: 0, flash: 0 };
 
       const roundEl = stage.querySelector<HTMLElement>(`.${styles.round}`);
+      /* How hard the round is being pushed. Derived from the change in its
+         own travel value between frames, then decayed on the ticker so it
+         settles back to sharp when scrolling stops. */
+      let speed = 0;
+      let lastT = 0;
       const holeEl = stage.querySelector<HTMLElement>(`.${styles.hole}`);
       const impact = stage.querySelector<HTMLElement>(`.${styles.impact}`);
 
@@ -137,6 +142,9 @@ export default function RangeHero() {
            it leaving from the shooter rather than from a fixed point. */
         if (roundEl) {
           const t = round.t;
+          const delta = Math.abs(t - lastT);
+          lastT = t;
+          speed = Math.min(1, Math.max(speed, delta * 34));
           /* Hyperbolic falloff, the same shape real perspective gives:
              scale = 1 / (1 + t * depth). Everything is a pure function of the
              travel value, so scrubbing back retraces the path exactly. */
@@ -149,6 +157,7 @@ export default function RangeHero() {
             `translate(-50%, -50%) translate(0, ${y.toFixed(1)}px) ` +
             `scale(${scale.toFixed(4)}) rotate(${spin.toFixed(2)}deg)`;
           roundEl.style.opacity = t >= 1 ? "0" : String(Math.min(1, (1 - t) * 9));
+          roundEl.style.setProperty("--speed", speed.toFixed(3));
         }
         if (holeEl) holeEl.style.opacity = round.hole.toFixed(3);
         if (impact) {
@@ -158,6 +167,13 @@ export default function RangeHero() {
         }
       };
       apply();
+
+      const decay = () => {
+        if (speed < 0.001) return;
+        speed *= 0.9;
+        roundEl?.style.setProperty("--speed", speed.toFixed(3));
+      };
+      gsap.ticker.add(decay);
 
       /* Published from the timeline, never the trigger: a scrubbed trigger
          fires on scroll while the playhead catches up on later ticks, which
@@ -216,6 +232,9 @@ export default function RangeHero() {
         .to(cam, { ringScale: 1.9, duration: 0.24 }, 0.76)
         .to(cam, { rings: 0.55, duration: 0.09 }, 0.76)
         .to(cam, { rings: 0, duration: 0.11 }, 0.87);
+
+      /* Returned from the context callback, so gsap.context reverts it. */
+      return () => gsap.ticker.remove(decay);
     },
     [version]
   );
@@ -353,7 +372,22 @@ export default function RangeHero() {
             perspective falloff is applied directly instead, and it converges
             on the vanishing point exactly as the geometry does. */}
         <div className={styles.round}>
-          <Round />
+          {/* The path it came down, left behind toward the camera. */}
+          <span className={styles.trail} aria-hidden="true" />
+          {/* Tilted away from the camera so the nose points downrange rather
+              than at the ceiling. Everything below is inside that tilt. */}
+          <div className={styles.roundTilt}>
+            {/* A pre-blurred copy sitting just behind the sharp one. Its
+                opacity and stretch are driven by how fast the page is being
+                scrolled, which is cheaper than animating a filter and reads
+                as motion blur. */}
+            <div className={styles.roundGhost}>
+              <Round />
+            </div>
+            <div className={styles.roundBody}>
+              <Round />
+            </div>
+          </div>
         </div>
 
         <div className={styles.haze} aria-hidden="true" />

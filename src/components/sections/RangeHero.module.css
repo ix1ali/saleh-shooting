@@ -469,8 +469,53 @@
   width: 150px;
   height: 322px;
   transform-origin: 50% 50%;
+  perspective: 520px;
   will-change: transform, opacity;
   z-index: 1;
+}
+
+/* Laid back so the nose points into the lane instead of at the ceiling. The
+   flight axis then runs into the screen, which is why the roll applied by the
+   timeline is a plain 2D rotation: it is a roll about that axis. */
+.roundTilt {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(-56deg);
+  transform-style: preserve-3d;
+}
+
+.roundBody { position: absolute; inset: 0; }
+
+/* Motion blur. The blur itself is static; only opacity and stretch move, so
+   nothing re-filters on every frame. */
+.roundGhost {
+  position: absolute;
+  inset: 0;
+  filter: blur(9px);
+  opacity: calc(var(--speed, 0) * 0.9);
+  transform: translateY(7%) scaleY(1.3);
+  will-change: opacity, transform;
+}
+
+/* The wake, stretching back toward the camera. */
+.trail {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  inline-size: 40%;
+  block-size: 190%;
+  margin-inline-start: -20%;
+  background: linear-gradient(to bottom,
+    rgba(214, 236, 255, 0.55) 0%,
+    rgba(120, 190, 255, 0.22) 26%,
+    rgba(70, 150, 240, 0.07) 55%,
+    transparent 82%);
+  filter: blur(10px);
+  opacity: var(--speed, 0);
+  transform-origin: 50% 0%;
+  transform: scaleY(calc(0.3 + var(--speed, 0) * 1.4));
+  pointer-events: none;
+  will-change: opacity, transform;
 }
 
 /* The flash on the paper as a round lands. */
