@@ -3,7 +3,7 @@ import Preloader from "@/components/ui/Preloader";
 import SiteChrome from "@/components/ui/SiteChrome";
 import RangeHero from "@/components/sections/RangeHero";
 import IntroSection from "@/components/sections/IntroSection";
-import ExperienceStory from "@/components/sections/ExperienceStory";
+import RangesGrid from "@/components/sections/RangesGrid";
 import ExperienceSelector from "@/components/sections/ExperienceSelector";
 import SessionSteps from "@/components/sections/SessionSteps";
 import HoursLocation from "@/components/sections/HoursLocation";
@@ -19,7 +19,7 @@ export default function Home() {
       <main className="shell">
         <RangeHero />
         <IntroSection />
-        <ExperienceStory />
+        <RangesGrid />
         <ExperienceSelector />
         <SessionSteps />
         <HoursLocation />

@@ -161,6 +161,10 @@ export type Experience = {
 export const experiencesSection = {
   label: t("Ranges", "الميادين"),
   heading: t("WHAT YOU CAN SHOOT", "ماذا يمكنك أن ترمي"),
+  note: t(
+    "All four run under supervision, with equipment and protection provided. Tap any of them to ask about it.",
+    "جميعها تُدار تحت الإشراف، مع توفير المعدات ووسائل الحماية. اضغط على أي منها للسؤال عنه."
+  ),
 };
 
 export const experiences: Experience[] = [
@@ -185,7 +189,7 @@ export const experiences: Experience[] = [
     visual: "rifle",
     image: "rifle",
     title: t("Rifle", "البندقية"),
-    kicker: t("Long lanes, bench rest", "ميادين طويلة، رماية من منضدة"),
+    kicker: t("Bench rest", "من منضدة"),
     body: t(
       "Shot from a bench with the rifle supported, so the distance does the work rather than your arms. Slower, quieter, and the most satisfying to see a tight group from.",
       "تُرمى من منضدة مع إسناد البندقية، فتقوم المسافة بالعمل بدلاً من ذراعيك. أبطأ وأهدأ، والأكثر إمتاعاً عند رؤية تجميع دقيق."
@@ -199,7 +203,7 @@ export const experiences: Experience[] = [
     visual: "shotgun",
     image: "shotgun",
     title: t("Shotgun", "الشوزن"),
-    kicker: t("Standing, wide pattern", "وقوفاً، انتشار واسع"),
+    kicker: t("Standing", "وقوفاً"),
     body: t(
       "The loudest and the most physical of the three. Fired standing, with a spread wide enough that timing matters more than precision. The one groups tend to remember.",
       "الأعلى صوتاً والأكثر بدنية بين الثلاثة. تُرمى وقوفاً، بانتشار واسع يجعل التوقيت أهم من الدقة. وهي التي تتذكرها المجموعات عادةً."
@@ -213,7 +217,7 @@ export const experiences: Experience[] = [
     visual: "archery",
     image: "archery",
     title: t("Archery", "القوس والسهم"),
-    kicker: t("Indoor hall, recurve bows", "صالة داخلية، أقواس منحنية"),
+    kicker: t("Indoor hall", "صالة داخلية"),
     body: t(
       "No noise and no recoil, in its own hall with its own targets. The one to pick if you want the focus without the bang, or if you are bringing people who would rather not be around firearms.",
       "لا ضجيج ولا ارتداد، في صالة خاصة بأهدافها الخاصة. اخترها إن أردت التركيز دون دوي الطلقات، أو إن كنت ستُحضر من يفضّل الابتعاد عن الأسلحة النارية."

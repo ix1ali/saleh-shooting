@@ -109,42 +109,13 @@ reduced-motion helpers.
 
 | # | Section | Idea |
 | --- | --- | --- |
-| 01 | Hero | A round sits close to the camera in a real CSS-3D lane. Scroll sends it downrange and drives the camera after it; it punches the paper, then the bullseye opens into the next section |
+| 01 | Hero | A real CSS-3D lane. Scroll drives the camera down it, and the bullseye opens into the next section |
 | 02 | Intro | Editorial assembly — rule, then lines, then copy, over a parallaxing plate |
-| 03 | Ranges | Pinned panels stack; the incoming lane rises over the outgoing one |
+| 03 | Ranges | A square grid: photograph, name across the middle, one short move to settle |
 | 04 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
 | 05 | First visit | A round travels a rail, lighting each step of the session as it passes |
 | 06 | Visit | Mechanical — digits roll, rules grow, address reveals line by line |
 | 07 | Contact | Panel rises over a photographic backdrop; tracking closes; the mark lands last |
-
-### The round
-
-It is laid back with `rotateX(-56deg)` under its own `perspective`, so the nose
-points down the lane instead of at the ceiling. Because the flight axis then runs
-into the screen, the roll the timeline applies is a plain 2D rotation — that *is*
-a roll about the axis of flight.
-
-Speed is real, not decorative: the change in the travel value between frames
-drives a `--speed` custom property, decayed on the ticker so it settles when
-scrolling stops. It feeds a pre-blurred ghost copy sitting behind the sharp one
-and a wake stretching back toward the camera. Scroll hard and it smears; ease off
-and it sharpens. The blur itself is static — only opacity and stretch animate, so
-nothing re-filters per frame.
-
-It is drawn **over** the lane, not inside it, and its perspective falloff is
-applied by hand (`scale = 1 / (1 + t * depth)`, offset by `dropPx * scale` so it
-converges on the vanishing point). Two reasons it cannot live in the 3D scene:
-
-- An object in the scene can never appear larger than its own world size at
-  z <= 0, and anything big enough to read close to the camera is taller than
-  the lane, so the ceiling plane cuts straight through it.
-- The camera accelerates down the lane. Any eased start on the round lets the
-  camera overtake it, at which point it crosses the camera plane and blows up
-  across the frame. Its travel is linear, which is both correct for a round
-  and what keeps it ahead.
-
-Everything is a pure function of the travel value, so scrubbing backwards
-retraces exactly the same path.
 
 ### The hero lane
 

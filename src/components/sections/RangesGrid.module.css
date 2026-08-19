@@ -1,0 +1,122 @@
+/* =========================================================================
+   RANGES — the four things you can shoot.
+   A plain square grid. Each card is a photograph with its name set across the
+   middle. It is meant to be read in one glance and tapped, not scrolled
+   through: the previous version pinned the page for four full screens to say
+   the same thing.
+   ====================================================================== */
+
+.section {
+  position: relative;
+  padding-block: 14svh 15svh;
+  padding-inline: var(--gutter);
+  background: var(--ink);
+}
+
+.head { margin-block-end: 28px; }
+.heading { margin-block-start: 18px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.card {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--void);
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.7s var(--ease-out);
+}
+.card:active .media { transform: scale(1.045); }
+
+/* Even, slightly heavier at the foot, so a centred title reads on any frame. */
+.tint {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom,
+      rgba(4, 7, 14, 0.42) 0%,
+      rgba(4, 7, 14, 0.52) 45%,
+      rgba(4, 7, 14, 0.74) 100%);
+  transition: background-color 0.5s var(--ease-out);
+}
+
+/* A hairline that draws in on press. */
+.edge {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(242, 246, 251, 0.1);
+  transition: border-color 0.4s var(--ease-out);
+  pointer-events: none;
+}
+.card:active .edge { border-color: var(--accent); }
+
+.label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding-inline: 10px;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.28rem, 6.2vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: var(--bone);
+  text-shadow: 0 2px 22px rgba(4, 7, 14, 0.85);
+}
+:global(html[lang="ar"]) .title {
+  font-family: var(--font-arabic);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(242, 246, 251, 0.62);
+}
+:global(html[lang="ar"]) .sub { letter-spacing: 0.02em; text-transform: none; }
+
+/* Lane number in the corner, quiet. */
+.index {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: 11px;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(242, 246, 251, 0.45);
+  direction: ltr;
+}
+
+/* ---- Footnote ---------------------------------------------------------- */
+
+.note {
+  margin-block-start: 22px;
+  font-size: var(--t-small);
+  color: rgba(242, 246, 251, 0.6);
+  line-height: 1.6;
+  max-inline-size: 40ch;
+}

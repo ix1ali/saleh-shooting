@@ -8,7 +8,6 @@ import { brand, hero as heroCopy, ui } from "@/data/site";
 import { getOpenState, type OpenState } from "@/lib/hours";
 import MaskHeading from "@/components/motion/MaskHeading";
 import TargetRings from "@/components/motion/TargetRings";
-import Round from "@/components/visual/Round";
 import Photo from "@/components/visual/Photo";
 import styles from "./RangeHero.module.css";
 
@@ -45,38 +44,10 @@ const DIVIDERS = [420, 780, 1140, 1500, 1860, 2220, 2580, 2940, 3300];
 const LIGHTS = [300, 700, 1100, 1500, 1900, 2300, 2700, 3100, 3500];
 const MARKERS = [900, 1800, 2700];
 
-/**
- * The three shots.
- *
- * `at` is the position in the hero timeline where the round leaves the muzzle,
- * `hole` is where it lands on the paper as a fraction of the target face.
- * Each round starts just in front of the camera wherever the camera happens to
- * be, so it always reads as being fired from where the visitor is standing.
- */
-/**
- * The round.
- *
- * It starts close to the camera and travels the length of the lane as you
- * scroll, so it is the thing your finger is actually moving. Its world
- * position is a pure function of the travel value — never of the live camera
- * position — so scrubbing backwards retraces exactly the same path.
- *
- * The camera chases it, which is why it holds its size for the first part of
- * the flight and only pulls away once it has the speed.
- */
-const ROUND = {
-  /* How hard it recedes. Higher shrinks it faster over the same travel. */
-  depth: 15,
-  /* How far below the vanishing point it sits at full size, in screen px.
-     Negative lifts it clear of the display type underneath. */
-  dropPx: -12,
-  /* The travel window as a fraction of the hero timeline. */
-  from: 0.04,
-  to: 0.58,
-};
-
-/* Holes already in the paper when you arrive. The round you fire adds the
-   one in the centre. */
+/* Holes already in the paper when you arrive. One more lands as the camera
+   closes, so the target you reach is one that has been shot. No projectile is
+   drawn: it read as a sticker pasted over the type rather than an object in
+   the room. */
 const OLD_HOLES = [
   { x: 41, y: 55 },
   { x: 57, y: 43 },
@@ -116,14 +87,8 @@ export default function RangeHero() {
 
       const cam = { n: 0, scene: 0.7, lights: 0.6, portal: 0, rings: 0, ringScale: 0.05 };
       /* One travel value and one hole value per shot. */
-      const round = { t: 0, hole: 0, flash: 0 };
+      const round = { hole: 0, flash: 0 };
 
-      const roundEl = stage.querySelector<HTMLElement>(`.${styles.round}`);
-      /* How hard the round is being pushed. Derived from the change in its
-         own travel value between frames, then decayed on the ticker so it
-         settles back to sharp when scrolling stops. */
-      let speed = 0;
-      let lastT = 0;
       const holeEl = stage.querySelector<HTMLElement>(`.${styles.hole}`);
       const impact = stage.querySelector<HTMLElement>(`.${styles.impact}`);
 
@@ -140,25 +105,6 @@ export default function RangeHero() {
         /* Each round flies from just ahead of the camera to the target face.
            Recomputing the start from the live camera position is what keeps
            it leaving from the shooter rather than from a fixed point. */
-        if (roundEl) {
-          const t = round.t;
-          const delta = Math.abs(t - lastT);
-          lastT = t;
-          speed = Math.min(1, Math.max(speed, delta * 34));
-          /* Hyperbolic falloff, the same shape real perspective gives:
-             scale = 1 / (1 + t * depth). Everything is a pure function of the
-             travel value, so scrubbing back retraces the path exactly. */
-          const scale = 1 / (1 + t * ROUND.depth);
-          /* Offsetting by the scaled distance is what makes it converge on
-             the vanishing point instead of sliding to it in a straight line. */
-          const y = ROUND.dropPx * scale;
-          const spin = t * 22;
-          roundEl.style.transform =
-            `translate(-50%, -50%) translate(0, ${y.toFixed(1)}px) ` +
-            `scale(${scale.toFixed(4)}) rotate(${spin.toFixed(2)}deg)`;
-          roundEl.style.opacity = t >= 1 ? "0" : String(Math.min(1, (1 - t) * 9));
-          roundEl.style.setProperty("--speed", speed.toFixed(3));
-        }
         if (holeEl) holeEl.style.opacity = round.hole.toFixed(3);
         if (impact) {
           impact.style.opacity = round.flash.toFixed(3);
@@ -167,13 +113,6 @@ export default function RangeHero() {
         }
       };
       apply();
-
-      const decay = () => {
-        if (speed < 0.001) return;
-        speed *= 0.9;
-        roundEl?.style.setProperty("--speed", speed.toFixed(3));
-      };
-      gsap.ticker.add(decay);
 
       /* Published from the timeline, never the trigger: a scrubbed trigger
          fires on scroll while the playhead catches up on later ticks, which
@@ -205,20 +144,11 @@ export default function RangeHero() {
       /* The round runs the length of the lane across half the hero, so it is
          moving with the finger rather than firing on a cue. It accelerates
          away once it has the speed. */
-      /* Linear, and deliberately so. An eased start looks better in
-         isolation but lets the camera — which accelerates down the lane —
-         overtake the round, at which point it passes through the camera plane
-         and blows up across the frame. A round travels at a constant speed
-         anyway, and constant speed is what keeps it ahead. */
-      tl.fromTo(
-        round,
-        { t: 0 },
-        { t: 1, duration: ROUND.to - ROUND.from, ease: "none" },
-        ROUND.from
-      );
-      tl.to(round, { hole: 1, duration: 0.015 }, ROUND.to);
-      tl.to(round, { flash: 1, duration: 0.012 }, ROUND.to)
-        .to(round, { flash: 0, duration: 0.06, ease: "power2.out" }, ROUND.to + 0.012);
+      /* The hole appears as the camera closes, so the target you arrive at
+         is one that has been shot. */
+      tl.to(round, { hole: 1, duration: 0.02 }, 0.42);
+      tl.to(round, { flash: 1, duration: 0.015 }, 0.42)
+        .to(round, { flash: 0, duration: 0.07, ease: "power2.out" }, 0.435);
 
       /* 0.45 → 1.00 : the run-in. Apparent size grows as 1 / (3500 - camN),
          so the travel is split and the last leg decelerates, keeping the
@@ -233,8 +163,6 @@ export default function RangeHero() {
         .to(cam, { rings: 0.55, duration: 0.09 }, 0.76)
         .to(cam, { rings: 0, duration: 0.11 }, 0.87);
 
-      /* Returned from the context callback, so gsap.context reverts it. */
-      return () => gsap.ticker.remove(decay);
     },
     [version]
   );
@@ -371,25 +299,6 @@ export default function RangeHero() {
             the lane itself, so the ceiling plane cuts through it. Here the
             perspective falloff is applied directly instead, and it converges
             on the vanishing point exactly as the geometry does. */}
-        <div className={styles.round}>
-          {/* The path it came down, left behind toward the camera. */}
-          <span className={styles.trail} aria-hidden="true" />
-          {/* Tilted away from the camera so the nose points downrange rather
-              than at the ceiling. Everything below is inside that tilt. */}
-          <div className={styles.roundTilt}>
-            {/* A pre-blurred copy sitting just behind the sharp one. Its
-                opacity and stretch are driven by how fast the page is being
-                scrolled, which is cheaper than animating a filter and reads
-                as motion blur. */}
-            <div className={styles.roundGhost}>
-              <Round />
-            </div>
-            <div className={styles.roundBody}>
-              <Round />
-            </div>
-          </div>
-        </div>
-
         <div className={styles.haze} aria-hidden="true" />
         <div className={styles.vignette} aria-hidden="true" />
         <div className={styles.grain} aria-hidden="true" />
@@ -417,13 +326,12 @@ export default function RangeHero() {
 
           <p className={`body-copy ${styles.support}`}>{T(heroCopy.support)}</p>
 
-          <div className={styles.facts}>
-            <span className={styles.fact} data-open={state.open === true}>
-              <span className={styles.factDot} aria-hidden="true" />
+          <div className={styles.status}>
+            <span className={styles.statusDot} data-open={state.open === true} aria-hidden="true" />
+            <span className={styles.statusText}>
               {openLabel ?? T(ui.today)}
+              {state.boundary ? ` · ${state.open ? T(ui.closesAt) : T(ui.opensAt)} ${state.boundary}` : ""}
             </span>
-            <span className={styles.fact}>{T(heroCopy.factRanges)}</span>
-            <span className={styles.fact}>{T(heroCopy.factGear)}</span>
           </div>
         </div>
 
