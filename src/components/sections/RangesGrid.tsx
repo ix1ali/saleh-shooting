@@ -81,7 +81,7 @@ export default function RangesGrid() {
             aria-label={T(r.title)}
           >
             <div className={styles.media}>
-              <Photo name={r.image ?? "range"} alt="" grade="none" />
+              <Photo name={r.image ?? "range"} alt="" grade="none" mono />
             </div>
             <span className={styles.tint} aria-hidden="true" />
             <span className={styles.index}>{r.index}</span>

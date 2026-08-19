@@ -5,6 +5,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { prefersReducedMotion, useGsap, useIsoLayoutEffect } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
 import { brand, contact, navItems, ui } from "@/data/site";
+import { getOpenState, type OpenState } from "@/lib/hours";
 import { buildActions } from "@/lib/actions";
 import TargetRings from "@/components/motion/TargetRings";
 import ActionIcon from "@/components/ui/ActionIcon";
@@ -21,6 +22,7 @@ export default function SiteChrome() {
   const [past, setPast] = useState(false);
   const [atContact, setAtContact] = useState(false);
   const [section, setSection] = useState(0);
+  const [live, setLive] = useState<OpenState>({ open: null, today: null, boundary: null, now: null });
   const overlay = useRef<HTMLDivElement | null>(null);
   const bar = useRef<HTMLDivElement | null>(null);
   const quick = useRef<HTMLDivElement | null>(null);
@@ -29,8 +31,18 @@ export default function SiteChrome() {
   const { T, locale, toggle, version } = useLocale();
 
   const actions = buildActions(T);
-  const primary = actions.find((a) => a.primary) ?? actions[0];
+  /* The bar is for starting a conversation, so Message leads here even though
+     Location is the accented action inside the contact panel. */
+  const primary = actions.find((a) => a.id === "instagram") ?? actions[0];
   const secondary = actions.find((a) => a.id === "directions") ?? actions[actions.length - 1];
+
+  /* Live from the wall clock in Kuwait, refreshed while the tab is open. */
+  useEffect(() => {
+    const update = () => setLive(getOpenState());
+    update();
+    const id = window.setInterval(update, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
 
   /* --- Chrome enters once the hero sequence is done ---------------------- */
 
@@ -216,6 +228,20 @@ export default function SiteChrome() {
         </a>
 
         <div className={styles.barRight}>
+          {/* Live status. It is the first thing anyone wants to know, so it
+              sits in the bar rather than only inside a section. */}
+          {live.open !== null && (
+            <a
+              className={styles.live}
+              data-open={live.open}
+              href="#visit"
+              onClick={(e) => { e.preventDefault(); goTo("visit"); }}
+              title={live.boundary ? `${live.open ? T(ui.closesAt) : T(ui.opensAt)} ${live.boundary}` : undefined}
+            >
+              <span className={styles.liveDot} aria-hidden="true" />
+              {live.open ? T(ui.liveOpen) : T(ui.liveClosed)}
+            </a>
+          )}
           <button
             type="button"
             className={styles.langBtn}

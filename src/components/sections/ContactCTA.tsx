@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { REVEAL, SCRUB, prefersReducedMotion, useGsap } from "@/lib/motion";
 import { useLocale } from "@/lib/locale";
-import { brand, contactSection, hours } from "@/data/site";
+import { brand, contactSection } from "@/data/site";
 import { buildActions } from "@/lib/actions";
 import TrackingIn from "@/components/motion/TrackingIn";
 import RevealCopy from "@/components/motion/RevealCopy";
@@ -182,19 +182,6 @@ export default function ContactCTA() {
 
           <p className={styles.closing}>{T(contactSection.closing)}</p>
 
-          {/* The last line on the page carries the opening hours rather than a
-              decorative label — it is the thing a visitor is most likely to
-              still need at the bottom of the page. */}
-          <div className={styles.legal}>
-            {hours.map((h) => (
-              <span key={h.id} className={styles.legalItem}>
-                <span className={styles.legalDays}>{T(h.short)}</span>
-                <span className={styles.legalTime}>
-                  {h.open}–{h.close}
-                </span>
-              </span>
-            ))}
-          </div>
         </div>
       </section>
     </div>

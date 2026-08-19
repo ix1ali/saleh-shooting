@@ -11,6 +11,8 @@ type Props = {
   priority?: boolean;
   /** Focal point for the crop. */
   position?: string;
+  /** Black and white, lifted so the subject reads on a dark page. */
+  mono?: boolean;
 };
 
 /**
@@ -34,9 +36,10 @@ export default function Photo({
   grade = "medium",
   priority = false,
   position = "center",
+  mono = false,
 }: Props) {
   return (
-    <div className={`${styles.wrap} ${className}`} data-grade={grade}>
+    <div className={`${styles.wrap} ${className}`} data-grade={grade} data-mono={mono}>
       <picture>
         <source srcSet={`/media/${name}.avif`} type="image/avif" />
         <source srcSet={`/media/${name}.webp`} type="image/webp" />

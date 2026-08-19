@@ -30,6 +30,14 @@ Nothing is hard-coded in a component. Each entry is tagged:
 - Google Maps listing: *Mayadeen Public Shooting Range / Shooting Q8*
 - Enquiries are handled by Instagram DM
 
+### Two placeholders that MUST be replaced before launch
+
+1. **`contact.whatsapp`** is `"96500000000"`. The 500 prefix is not issued to
+   Kuwaiti mobiles, so WhatsApp reports it unreachable rather than opening a chat
+   with a stranger. The button is live the moment a real number replaces it.
+2. **`armoury.items`** is representative stock, not the real rack. Replace every
+   row, and set `image` on a row to swap its drawn profile for a photograph.
+
 ### What you should replace
 
 - All section copy (intro, standards, archery, contact) — currently written for structure
@@ -112,8 +120,8 @@ reduced-motion helpers.
 | 01 | Hero | A real CSS-3D lane. Scroll drives the camera down it, and the bullseye opens into the next section |
 | 02 | Intro | Editorial assembly — rule, then lines, then copy, over a parallaxing plate |
 | 03 | Ranges | A square grid: photograph, name across the middle, one short move to settle |
-| 04 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
-| 05 | First visit | A round travels a rail, lighting each step of the session as it passes |
+| 04 | The Locker | A catalogue: shaded profile, name, chambering, range it belongs to |
+| 05 | Good to know | A spec sheet of the questions people ask before coming |
 | 06 | Visit | Mechanical — digits roll, rules grow, address reveals line by line |
 | 07 | Contact | Panel rises over a photographic backdrop; tracking closes; the mark lands last |
 

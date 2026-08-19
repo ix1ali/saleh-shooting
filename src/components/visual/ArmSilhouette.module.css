@@ -1,0 +1,32 @@
+/* Shaded profiles for the locker. Two light sources, matching the
+   photography: a warm-white key along the top edge and a cool rim below. */
+
+.svg {
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.art { transition: opacity 0.4s var(--ease-out); }
+
+/* Key light along the upper edge. */
+.hi { fill: rgba(255, 255, 255, 0.42); }
+.hiFill { fill: rgba(255, 255, 255, 0.3); }
+
+/* Cool rim underneath, picked up from the LED strips. */
+.rim {
+  stroke: rgba(111, 190, 255, 0.5);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.line {
+  stroke: rgba(10, 15, 24, 0.85);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.string { stroke: rgba(214, 228, 245, 0.55); stroke-width: 1; fill: none; }
+.shaft { stroke: #B9C6D8; stroke-width: 2; }
+.head { stroke: var(--accent-bright); stroke-width: 2; stroke-linecap: round; }
+.fletch { stroke: #8FA2BC; stroke-width: 1.6; stroke-linecap: round; }

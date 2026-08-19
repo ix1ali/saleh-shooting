@@ -48,3 +48,9 @@
 }
 
 .wrap[data-grade="none"] .grade { background: none; }
+
+/* Black and white, opened up. These photographs are of a very dark interior;
+   left in colour and unlifted, the subject disappears into the room. */
+.wrap[data-mono="true"] .img {
+  filter: grayscale(1) contrast(1.24) brightness(1.42) saturate(0);
+}

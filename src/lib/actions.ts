@@ -27,7 +27,7 @@ export function buildActions(T: (v: I18n) => string): Action[] {
     href: contact.instagram,
     icon: "instagram",
     external: true,
-    primary: contact.primaryChannel === "instagram",
+    primary: false,
   });
 
   if (contact.whatsapp) {
@@ -37,7 +37,7 @@ export function buildActions(T: (v: I18n) => string): Action[] {
       href: `https://wa.me/${contact.whatsapp}`,
       icon: "whatsapp",
       external: true,
-      primary: contact.primaryChannel === "whatsapp",
+      primary: false,
     });
   }
 
@@ -48,17 +48,19 @@ export function buildActions(T: (v: I18n) => string): Action[] {
       href: `tel:+${contact.phone}`,
       icon: "phone",
       external: false,
-      primary: contact.primaryChannel === "phone",
+      primary: false,
     });
   }
 
+  /* Location carries the accent. Everything else stays plain, so exactly one
+     thing on the panel is asking to be tapped. */
   actions.push({
     id: "directions",
     label: T(ui.directions),
     href: contact.mapsUrl,
     icon: "pin",
     external: true,
-    primary: false,
+    primary: true,
   });
 
   return actions;

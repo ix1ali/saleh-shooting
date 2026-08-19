@@ -40,19 +40,21 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   z-index: 1;
+  min-inline-size: 0;
 }
 
 .brandMark { inline-size: 22px; block-size: 22px; }
 
 .brandName {
   font-family: var(--font-display);
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--bone);
+  white-space: nowrap;
 }
 :global(html[lang="ar"]) .brandName {
   font-family: var(--font-arabic);
@@ -65,8 +67,47 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   z-index: 1;
+  flex: 0 0 auto;
+}
+
+/* Live open/closed. Tapping it goes to the hours. */
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+  border: 1px solid var(--rule);
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+:global(html[lang="ar"]) .live { letter-spacing: 0; text-transform: none; }
+
+.liveDot {
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: 50%;
+  background: var(--mist-dim);
+  flex: 0 0 auto;
+}
+
+.live[data-open="true"] { color: var(--bone); border-color: rgba(46, 144, 245, 0.45); }
+.live[data-open="true"] .liveDot {
+  background: var(--accent-bright);
+  animation: livePulse 2.8s var(--ease-inout) infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 0 0 2px var(--accent-glow); }
+  50%      { box-shadow: 0 0 0 5px rgba(46, 144, 245, 0.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live[data-open="true"] .liveDot { animation: none; }
 }
 
 .langBtn {

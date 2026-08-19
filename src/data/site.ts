@@ -45,7 +45,11 @@ export const contact = {
      While these stay null, the Call and WhatsApp buttons are not rendered
      anywhere — no dead links are shipped. */
   phone: null as string | null,
-  whatsapp: null as string | null,
+  /* REPLACE BEFORE LAUNCH. This is a deliberate placeholder: the 500 prefix is
+     not issued to Kuwaiti mobiles, so WhatsApp reports it unreachable rather
+     than opening a chat with a stranger. The button is live the moment a real
+     number replaces it. */
+  whatsapp: "96500000000" as string | null,
 
   /* [VERIFIED] The account directs all enquiries to Instagram DM */
   primaryChannel: "instagram" as "instagram" | "whatsapp" | "phone",
@@ -247,73 +251,89 @@ export const pricing = {
 };
 
 /* -------------------------------------------------------------------------- */
-/* HOW A SESSION WORKS  (replaces the old abstract "standards" block)          */
-/*   Practical sequence a first-time visitor walks through. Safety is covered  */
-/*   as part of the process rather than as a lecture.                          */
+/* GOOD TO KNOW                                                                */
+/*   A spec sheet, not a story. What a first-time visitor asks before coming.  */
 /* -------------------------------------------------------------------------- */
 
-export const session = {
-  label: t("Your first visit", "زيارتك الأولى"),
-  heading: t("HOW A SESSION WORKS", "كيف تسير الجلسة"),
-  body: t(
-    "If you have never shot before, this is the whole thing, start to finish.",
-    "إن لم تُجرّب الرماية من قبل، فهذه هي التجربة كاملة من البداية إلى النهاية."
-  ),
-  note: t(
-    "Still not sure? Send a message with how many of you there are and when you want to come, and they will tell you what is free.",
-    "ما زلت متردداً؟ أرسل رسالة تذكر فيها عددكم والوقت الذي تريدون الحضور فيه، وسيخبرونك بالمتاح."
-  ),
-  steps: [
+export const info = {
+  label: t("Good to know", "معلومات مفيدة"),
+  heading: t("BEFORE YOU COME", "قبل أن تأتي"),
+  rows: [
     {
-      n: "01",
-      title: t("Turn up", "الحضور"),
-      body: t(
-        "Message ahead on Instagram so they know you are coming, then find the complex behind Al Murooj.",
-        "راسلهم مسبقاً على إنستغرام ليعلموا بقدومك، ثم توجّه إلى المجمع خلف مروج."
-      ),
+      k: t("Experience", "الخبرة"),
+      v: t("None needed. Staff brief you before you shoot.", "لا حاجة لأي خبرة. يشرح لك الطاقم قبل الرماية."),
     },
     {
-      n: "02",
-      title: t("Pick a range", "اختر الميدان"),
-      body: t(
-        "Pistol, rifle, shotgun or archery. You can do more than one in a visit.",
-        "مسدس أو بندقية أو شوزن أو قوس وسهم. ويمكنك تجربة أكثر من واحدة في الزيارة."
-      ),
+      k: t("Equipment", "المعدات"),
+      v: t("Provided on site for every range.", "متوفرة في الموقع لجميع الميادين."),
     },
     {
-      n: "03",
-      title: t("Get kitted", "تجهيز المعدات"),
-      body: t(
-        "Ear and eye protection before you go anywhere near the line. Both are provided.",
-        "حماية للسمع والعين قبل الاقتراب من الخط. وكلاهما متوفر."
-      ),
+      k: t("Protection", "الحماية"),
+      v: t("Eye and ear protection included.", "حماية للعين والسمع مشمولة."),
     },
     {
-      n: "04",
-      title: t("Get briefed", "الإحاطة"),
-      body: t(
-        "Staff take you through handling, stance and the range commands, and stay with you on the line.",
-        "يشرح لك الطاقم التعامل والوقفة وأوامر الميدان، ويبقون معك على الخط."
-      ),
+      k: t("Supervision", "الإشراف"),
+      v: t("Staff stay with you on the line.", "يبقى الطاقم معك على الخط."),
     },
     {
-      n: "05",
-      title: t("Shoot", "الرماية"),
-      body: t(
-        "Your lane, your target, your pace. Muzzles stay pointed downrange the whole time.",
-        "ميدانك وهدفك وإيقاعك. تبقى الفوهات موجهة نحو الميدان طوال الوقت."
-      ),
+      k: t("Booking", "الحجز"),
+      v: t("Message ahead so a lane is free.", "راسلنا مسبقاً لضمان توفر ميدان."),
     },
     {
-      n: "06",
-      title: t("Take the target home", "خذ هدفك معك"),
-      body: t(
-        "Your target comes off the frame at the end. Most people keep the first one.",
-        "يُنزع هدفك من الإطار في النهاية. ومعظم الناس يحتفظون بأول هدف لهم."
-      ),
+      k: t("Getting there", "الوصول"),
+      v: t("Behind Al Murooj and the Hunting and Equestrian Club.", "خلف مروج ونادي الصيد والفروسية."),
     },
   ],
+  /* [NEEDED] The two questions the site still cannot answer. */
+  pending: [
+    { k: t("Prices", "الأسعار"), v: t("Ask when you book.", "اسأل عند الحجز.") },
+    { k: t("Minimum age", "الحد الأدنى للعمر"), v: t("Ask when you book.", "اسأل عند الحجز.") },
+  ],
 };
+
+/* -------------------------------------------------------------------------- */
+/* THE LOCKER                                                                  */
+/*   [PLACEHOLDER] Representative stock so the section can be designed and     */
+/*   reviewed. REPLACE every row with what is actually in the rack. Add a      */
+/*   photograph per item by setting `image` and dropping the file in           */
+/*   /public/media.                                                            */
+/* -------------------------------------------------------------------------- */
+
+export type ArmType = "pistol" | "revolver" | "rifle" | "shotgun" | "bow";
+
+export type ArmItem = {
+  id: string;
+  name: string;
+  /* Chambering, or draw weight for a bow. */
+  spec: string;
+  type: ArmType;
+  range: I18n;
+  image?: string | null;
+};
+
+export const armoury = {
+  label: t("The locker", "الخزنة"),
+  heading: t("WHAT IS IN THE RACK", "ما يوجد في الرف"),
+  body: t(
+    "A sample of what is available. Stock changes, so ask for what you want when you book.",
+    "نموذج مما هو متوفر. المخزون يتغير، لذا اسأل عمّا تريده عند الحجز."
+  ),
+  disclaimer: t(
+    "Representative list. Availability is confirmed at the counter.",
+    "قائمة استرشادية. يتم تأكيد التوفر عند الاستقبال."
+  ),
+  items: [
+    { id: "g17", name: "Glock 17", spec: "9x19mm", type: "pistol" as ArmType, range: t("Pistol", "المسدس") },
+    { id: "cz75", name: "CZ 75 SP-01", spec: "9x19mm", type: "pistol" as ArmType, range: t("Pistol", "المسدس") },
+    { id: "sw686", name: "S&W 686", spec: ".357 Magnum", type: "revolver" as ArmType, range: t("Pistol", "المسدس") },
+    { id: "ar15", name: "AR-15", spec: "5.56x45mm", type: "rifle" as ArmType, range: t("Rifle", "البندقية") },
+    { id: "cz457", name: "CZ 457", spec: ".22 LR", type: "rifle" as ArmType, range: t("Rifle", "البندقية") },
+    { id: "b686", name: "Beretta 686", spec: "12 gauge", type: "shotgun" as ArmType, range: t("Shotgun", "الشوزن") },
+    { id: "r870", name: "Remington 870", spec: "12 gauge", type: "shotgun" as ArmType, range: t("Shotgun", "الشوزن") },
+    { id: "recurve", name: "Recurve bow", spec: "20-30 lb", type: "bow" as ArmType, range: t("Archery", "القوس والسهم") },
+  ] as ArmItem[],
+};
+
 
 /* -------------------------------------------------------------------------- */
 /* CONTACT                                                                     */
@@ -327,112 +347,6 @@ export const contactSection = {
     "نرد على الرسائل عبر إنستغرام. أخبرهم بالميدان الذي تريده، وعدد الأشخاص، والوقت التقريبي."
   ),
   closing: t("See you on the line.", "نراك على الخط."),
-  /* Pre-filled prompt shown next to the message button. */
-  hint: t("Not sure what to ask?", "لا تعرف ماذا تسأل؟"),
-  hintExample: t(
-    "Hi — first time, two of us, this weekend. What do you recommend?",
-    "مرحباً — أول مرة، شخصان، نهاية هذا الأسبوع. بماذا تنصحون؟"
-  ),
-};
-
-/* -------------------------------------------------------------------------- */
-/* EXPERIENCE SELECTOR                                                         */
-/* -------------------------------------------------------------------------- */
-
-export const selector = {
-  label: t("Not sure where to start?", "لست متأكداً من أين تبدأ؟"),
-  heading: t("THREE QUESTIONS", "ثلاثة أسئلة"),
-  sub: t(
-    "Answer three and you get a range, the reason for it, and a message you can send as is.",
-    "أجب عن ثلاثة أسئلة وستحصل على ميدان مقترح، وسبب اختياره، ورسالة جاهزة للإرسال."
-  ),
-  restart: t("Start again", "ابدأ من جديد"),
-  resultKicker: t("Start with", "ابدأ بـ"),
-  resultCta: t("Send this message", "أرسل هذه الرسالة"),
-  resultWhy: t("Why this one", "لماذا هذه"),
-  copied: t("Copied", "تم النسخ"),
-  copyCta: t("Copy message", "انسخ الرسالة"),
-  questions: [
-    {
-      id: "first",
-      prompt: t("Have you shot before?", "هل سبق أن رميت من قبل؟"),
-      options: [
-        { id: "no", label: t("Never", "أبداً") },
-        { id: "some", label: t("A few times", "بضع مرات") },
-        { id: "yes", label: t("Regularly", "بانتظام") },
-      ],
-    },
-    {
-      id: "party",
-      prompt: t("Who is coming?", "من سيأتي معك؟"),
-      options: [
-        { id: "solo", label: t("Just me", "أنا فقط") },
-        { id: "friends", label: t("Friends", "أصدقاء") },
-        { id: "family", label: t("Family", "العائلة") },
-        { id: "group", label: t("A group", "مجموعة") },
-      ],
-    },
-    {
-      id: "vibe",
-      prompt: t("What sounds better?", "أيهما يبدو أفضل؟"),
-      options: [
-        { id: "loud", label: t("Loud and fun", "صاخبة وممتعة") },
-        { id: "precise", label: t("Quiet and precise", "هادئة ودقيقة") },
-        { id: "noguns", label: t("No firearms", "بدون أسلحة نارية") },
-      ],
-    },
-  ],
-};
-
-/* Recommendation copy per range. */
-export const recommendations: Record<
-  string,
-  { title: I18n; why: I18n; message: I18n }
-> = {
-  pistol: {
-    title: t("Pistol", "المسدس"),
-    why: t(
-      "Shortest learning curve and the fastest feedback, so a first session actually feels like progress.",
-      "أقصر منحنى تعلّم وأسرع ملاحظة للنتيجة، فتشعر بتقدّم حقيقي من الجلسة الأولى."
-    ),
-    message: t(
-      "Hi — first time shooting, interested in the pistol lanes. What do I need to know?",
-      "مرحباً — أول مرة أرمي، ومهتم بميادين المسدس. ما الذي أحتاج معرفته؟"
-    ),
-  },
-  rifle: {
-    title: t("Rifle", "البندقية"),
-    why: t(
-      "Shot from a supported bench, so it rewards patience over strength and suits anyone who wants to concentrate.",
-      "تُرمى من منضدة مسنودة، فتكافئ الصبر لا القوة، وتناسب من يريد التركيز."
-    ),
-    message: t(
-      "Hi — interested in the rifle lanes. What is available and what does a session involve?",
-      "مرحباً — مهتم بميادين البندقية. ما المتوفر وماذا تتضمن الجلسة؟"
-    ),
-  },
-  shotgun: {
-    title: t("Shotgun", "الشوزن"),
-    why: t(
-      "The most social of the three and the easiest to enjoy in a group, because nobody is trying to be precise.",
-      "الأكثر اجتماعية بين الثلاثة والأسهل للاستمتاع بها ضمن مجموعة، لأن لا أحد يحاول أن يكون دقيقاً."
-    ),
-    message: t(
-      "Hi — a few of us want to try the shotgun. Can you take a group and when is quietest?",
-      "مرحباً — نود نحن مجموعة تجربة الشوزن. هل يمكنكم استقبال مجموعة ومتى يكون المكان أهدأ؟"
-    ),
-  },
-  archery: {
-    title: t("Archery", "القوس والسهم"),
-    why: t(
-      "Its own hall, no noise and no recoil — the one that works when not everyone wants to be around firearms.",
-      "صالة خاصة، بلا ضجيج ولا ارتداد — الخيار المناسب حين لا يرغب الجميع بالتواجد قرب الأسلحة النارية."
-    ),
-    message: t(
-      "Hi — interested in archery rather than firearms. What is available?",
-      "مرحباً — مهتم بالقوس والسهم بدلاً من الأسلحة النارية. ما المتوفر لديكم؟"
-    ),
-  },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -443,8 +357,8 @@ export const navItems = [
   { id: "hero", index: "01", label: t("Top", "الأعلى") },
   { id: "intro", index: "02", label: t("The Complex", "المجمع") },
   { id: "experiences", index: "03", label: t("Ranges", "الميادين") },
-  { id: "selector", index: "04", label: t("Find Yours", "اختر تجربتك") },
-  { id: "session", index: "05", label: t("First Visit", "الزيارة الأولى") },
+  { id: "armoury", index: "04", label: t("The Locker", "الخزنة") },
+  { id: "info", index: "05", label: t("Good to Know", "معلومات مفيدة") },
   { id: "visit", index: "06", label: t("Hours", "المواعيد") },
   { id: "contact", index: "07", label: t("Contact", "التواصل") },
 ];
@@ -463,7 +377,7 @@ export const ui = {
   opensAt: t("Opens", "يفتح"),
   closesAt: t("Closes", "يغلق"),
   today: t("Today", "اليوم"),
-  directions: t("Directions", "الاتجاهات"),
+  directions: t("Location", "الموقع"),
   message: t("Message on Instagram", "راسلنا على إنستغرام"),
   messageShort: t("Message", "راسلنا"),
   call: t("Call", "اتصل"),
@@ -473,4 +387,6 @@ export const ui = {
   langToggle: t("العربية", "EN"),
   kuwaitTime: t("Kuwait time", "بتوقيت الكويت"),
   seeMore: t("See more", "المزيد"),
+  liveOpen: t("Open", "مفتوح"),
+  liveClosed: t("Closed", "مغلق"),
 };

@@ -4,8 +4,8 @@ import SiteChrome from "@/components/ui/SiteChrome";
 import RangeHero from "@/components/sections/RangeHero";
 import IntroSection from "@/components/sections/IntroSection";
 import RangesGrid from "@/components/sections/RangesGrid";
-import ExperienceSelector from "@/components/sections/ExperienceSelector";
-import SessionSteps from "@/components/sections/SessionSteps";
+import Armoury from "@/components/sections/Armoury";
+import GoodToKnow from "@/components/sections/GoodToKnow";
 import HoursLocation from "@/components/sections/HoursLocation";
 import ContactCTA from "@/components/sections/ContactCTA";
 
@@ -20,8 +20,8 @@ export default function Home() {
         <RangeHero />
         <IntroSection />
         <RangesGrid />
-        <ExperienceSelector />
-        <SessionSteps />
+        <Armoury />
+        <GoodToKnow />
         <HoursLocation />
         <ContactCTA />
       </main>
