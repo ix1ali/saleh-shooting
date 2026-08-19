@@ -16,9 +16,6 @@ const PLAN = [
   { name: "archery", src: "archery.png", w: 1200, h: 1600, pos: "attention" },
   { name: "range", src: "range.png", w: 1200, h: 1600, pos: "attention" },
   { name: "booths", src: "range2.png", w: 1200, h: 1600, pos: "attention" },
-  /* The hero needs a taller frame so a full-bleed 9:16 phone screen never
-     runs out of image at the top or bottom while the camera pushes in. */
-  { name: "hero", src: "pistol.png", w: 1200, h: 2100, pos: "attention" },
 ];
 
 const report = [];

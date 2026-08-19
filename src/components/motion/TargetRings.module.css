@@ -19,6 +19,9 @@
 .svg[data-tone="mist"]  { --ring-color: var(--mist);  --bull-color: var(--mist); }
 .svg[data-tone="accent"] { --ring-color: var(--accent); --bull-color: var(--accent); }
 
+/* Printed ink, for a paper target on a light face. */
+.svg[data-tone="ink"] { --ring-color: #0E1626; --bull-color: #0E1626; }
+
 /* Real targets read as a light field with a dark centre band; "mixed" gives
    the inner rings the accent so the bullseye holds the eye. */
 .svg[data-tone="mixed"] .ring { stroke: var(--mist); }

@@ -108,10 +108,10 @@ export default function ContactCTA() {
   return (
     <div ref={root} className={styles.outer}>
       <section id="contact" ref={panel} className={styles.section} data-section="contact">
-        {/* The closing frame is the archery hall — the calmest room on site,
-            and the one that reads best behind type. */}
+        {/* The closing frame is the booth row. Every photograph on the site
+            appears exactly once, so nothing reads as filler. */}
         <div className={styles.backdrop} aria-hidden="true">
-          <Photo name="archery" alt="" grade="none" position="center 30%" />
+          <Photo name="booths" alt="" grade="none" position="center 35%" />
         </div>
         <div className={styles.ground} aria-hidden="true" />
         <div ref={rings} className={styles.rings} aria-hidden="true">

@@ -62,15 +62,19 @@ node _media.mjs
 Re-run that after adding or replacing a source file. Edit the `PLAN` array in
 `_media.mjs` to change crops or output sizes.
 
+Every photograph appears **exactly once** on the site. If you add a section, give it
+a new source rather than reusing one.
+
 | Output | Source | Used by |
 | --- | --- | --- |
-| `hero` | pistol.png (taller crop) | Hero plate |
-| `pistol` | pistol.png | Disciplines 01, Activities |
-| `rifle` | rifle.png | Disciplines 02, Activities |
-| `shotgun` | shotgun.png | Disciplines 03, Activities |
-| `archery` | archery.png | Disciplines 04, Activities, Contact backdrop |
-| `range` | range.png | Hero portal, Intro, Activities |
-| `booths` | range2.png | Activities |
+| `range` | range.png | Intro |
+| `pistol` | pistol.png | Ranges 01 |
+| `rifle` | rifle.png | Ranges 02 |
+| `shotgun` | shotgun.png | Ranges 03 |
+| `archery` | archery.png | Ranges 04 |
+| `booths` | range2.png | Contact backdrop |
+
+The hero uses no photograph at all — it is drawn in CSS 3D.
 
 The earlier low-resolution Instagram grabs have been deleted.
 
@@ -105,16 +109,34 @@ reduced-motion helpers.
 
 | # | Section | Idea |
 | --- | --- | --- |
-| 01 | Hero | Scroll pushes the camera into the real lane; the sighting rings become the doorway |
+| 01 | Hero | A real CSS-3D lane. Scroll drives the camera down it, three rounds go downrange and leave a group in the paper, then the bullseye becomes the doorway |
 | 02 | Intro | Editorial assembly — rule, then lines, then copy, over a parallaxing plate |
-| 03 | Disciplines | Pinned panels stack; the incoming lane rises over the outgoing one |
-| 04 | Activities | Grid where each card carries its own discipline's motion — recoil, arrow, push, drift |
-| 05 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
-| 06 | First visit | A round travels a rail, lighting each step of the session as it passes |
-| 07 | Visit | Mechanical — digits roll, rules grow, address reveals line by line |
-| 08 | Contact | Panel rises over a photographic backdrop; tracking closes; the mark lands last |
+| 03 | Ranges | Pinned panels stack; the incoming lane rises over the outgoing one |
+| 04 | Selector | Staged questions; the result expands out of a ring and hands over a draft message |
+| 05 | First visit | A round travels a rail, lighting each step of the session as it passes |
+| 06 | Visit | Mechanical — digits roll, rules grow, address reveals line by line |
+| 07 | Contact | Panel rises over a photographic backdrop; tracking closes; the mark lands last |
 
-### Two things worth knowing
+### The hero lane
+
+Genuine CSS 3D. Floor, ceiling and walls are planes in space; `--camN` is one
+`translateZ` driven by scroll. The blue LED strips are gradients painted onto the wall
+planes, so they recede in real perspective — that is what carries the depth. The target
+grows purely through perspective; its scale is never animated.
+
+Three details that will bite if you edit it:
+
+- **Depth furniture culls itself in pure CSS**
+  (`calc((depth - 300 - var(--camN)) / 420 * var(--sceneOn))`), so nothing straddles the
+  camera plane and blows up across the frame. No per-element JS runs per frame.
+- **The long planes are pushed back** by `LANE.shift`. Centred on zero they end up
+  entirely behind the camera by the end of the run-in, leaving the target in black.
+- **The camera finishes 200 units past the target plane** (`CAM_END = 3400`). Under CSS
+  perspective an object scales by `p / (p - z)`; stopping at the target plane tops out
+  near half the screen width. The rig is anchored at `top: 42%`, on the perspective
+  origin, so the bullseye stays locked to the portal centre at every scale.
+
+### Two more things worth knowing
 
 **Scrubbed timelines publish from the timeline, not the trigger.** A ScrollTrigger's
 `onUpdate` fires on scroll while the scrub tween advances the playhead on later ticks.

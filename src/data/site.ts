@@ -106,12 +106,12 @@ export const timezone = "Asia/Kuwait";
 /* -------------------------------------------------------------------------- */
 
 export const hero = {
-  /* [VERIFIED] Disciplines are all visible in the facility photography. */
+  /* [VERIFIED] All four ranges are visible in the facility photography. */
   support: t(
     "Indoor lanes for pistol, rifle and shotgun, plus an indoor archery hall. Open seven days a week in Kuwait.",
     "ميادين داخلية للمسدس والبندقية والشوزن، بالإضافة إلى صالة قوس وسهم داخلية. مفتوح سبعة أيام في الأسبوع في الكويت."
   ),
-  factDisciplines: t("4 disciplines", "٤ رياضات"),
+  factRanges: t("4 ranges", "٤ ميادين"),
   factGear: t("Gear on site", "المعدات متوفرة"),
   imageAlt: t(
     "A shooter on an indoor pistol lane at the Shooting Complex",
@@ -130,15 +130,15 @@ export const intro = {
   headingLines: [t("FOUR", "أربع"), t("WAYS TO", "طرق"), t("SHOOT", "للرماية")],
   /* Concrete: what the place is, and what a first-timer needs to know. */
   body: t(
-    "Four disciplines under one roof, indoor lanes, and staff on the line with you. No experience needed for your first visit — equipment and protection are provided, and someone walks you through it before you shoot.",
-    "أربع رياضات تحت سقف واحد، وميادين داخلية، وطاقم يقف معك على الخط. لا حاجة لخبرة سابقة في زيارتك الأولى — المعدات ووسائل الحماية متوفرة، ويشرح لك أحد الطاقم كل شيء قبل الرماية."
+    "Four ranges under one roof, indoor lanes, and staff on the line with you. No experience needed for your first visit — equipment and protection are provided, and someone walks you through it before you shoot.",
+    "أربعة ميادين تحت سقف واحد، وميادين داخلية، وطاقم يقف معك على الخط. لا حاجة لخبرة سابقة في زيارتك الأولى — المعدات ووسائل الحماية متوفرة، ويشرح لك أحد الطاقم كل شيء قبل الرماية."
   ),
   statLabel: t("Following on Instagram", "متابع على إنستغرام"),
   statValue: 52400,
 };
 
 /* -------------------------------------------------------------------------- */
-/* DISCIPLINES                                                                 */
+/* RANGES                                                                      */
 /*   [VERIFIED] All four are visible in the supplied facility photography.     */
 /*   Descriptions say what the visitor actually does.                          */
 /* -------------------------------------------------------------------------- */
@@ -159,7 +159,7 @@ export type Experience = {
 };
 
 export const experiencesSection = {
-  label: t("Disciplines", "الرياضات"),
+  label: t("Ranges", "الميادين"),
   heading: t("WHAT YOU CAN SHOOT", "ماذا يمكنك أن ترمي"),
 };
 
@@ -222,87 +222,6 @@ export const experiences: Experience[] = [
   },
 ];
 
-/* -------------------------------------------------------------------------- */
-/* ACTIVITIES GRID                                                             */
-/*   A fast, scannable index of everything on offer. Each card either jumps    */
-/*   to a section on this page or opens a message.                             */
-/* -------------------------------------------------------------------------- */
-
-export type Activity = {
-  id: string;
-  title: I18n;
-  sub: I18n;
-  image: string;
-  /* "#section-id" scrolls on this page; "instagram" opens a DM. */
-  href: string;
-  /* Motion signature used by the card on scroll. */
-  motion: "push" | "drift" | "arrow" | "recoil";
-  /* Cards marked wide take the full row. */
-  wide?: boolean;
-};
-
-export const activitiesSection = {
-  label: t("Activities", "الأنشطة"),
-  heading: t("PICK YOUR LANE", "اختر ميدانك"),
-  body: t(
-    "Everything on site. Tap anything to see more or to ask about it.",
-    "كل ما هو متوفر في الموقع. اضغط على أي منها لمعرفة المزيد أو للسؤال عنه."
-  ),
-};
-
-export const activities: Activity[] = [
-  {
-    id: "pistol",
-    title: t("Pistol", "المسدس"),
-    sub: t("Indoor lanes", "ميادين داخلية"),
-    image: "pistol",
-    href: "#experiences",
-    motion: "recoil",
-  },
-  {
-    id: "rifle",
-    title: t("Rifle", "البندقية"),
-    sub: t("Bench rest", "من منضدة"),
-    image: "rifle",
-    href: "#experiences",
-    motion: "push",
-  },
-  {
-    id: "shotgun",
-    title: t("Shotgun", "الشوزن"),
-    sub: t("Standing", "وقوفاً"),
-    image: "shotgun",
-    href: "#experiences",
-    motion: "recoil",
-  },
-  {
-    id: "archery",
-    title: t("Archery", "القوس والسهم"),
-    sub: t("Indoor hall", "صالة داخلية"),
-    image: "archery",
-    href: "#experiences",
-    motion: "arrow",
-  },
-  {
-    id: "firsttime",
-    title: t("First visit", "الزيارة الأولى"),
-    sub: t("Never shot before", "لم تُجرّب من قبل"),
-    image: "range",
-    href: "#selector",
-    motion: "drift",
-    wide: true,
-  },
-  {
-    id: "groups",
-    title: t("Groups", "المجموعات"),
-    sub: t("Ask about booking", "اسأل عن الحجز"),
-    image: "booths",
-    href: "instagram",
-    motion: "drift",
-    wide: true,
-  },
-];
-
 /* [NEEDED] Not published anywhere, so not rendered. Confirm and enable. */
 export const unconfirmedOfferings = {
   enabled: false,
@@ -316,7 +235,7 @@ export const unconfirmedOfferings = {
 
 /* [NEEDED] Third parties quote prices publicly but the facility does not
    publish them, so nothing is shown. Fill these in and set enabled: true and
-   a price row appears on every discipline panel. */
+   a price row appears on every range panel. */
 export const pricing = {
   enabled: false,
   note: t("Prices are confirmed when you book.", "تُؤكَّد الأسعار عند الحجز."),
@@ -351,7 +270,7 @@ export const session = {
     },
     {
       n: "02",
-      title: t("Pick a discipline", "اختر الرياضة"),
+      title: t("Pick a range", "اختر الميدان"),
       body: t(
         "Pistol, rifle, shotgun or archery. You can do more than one in a visit.",
         "مسدس أو بندقية أو شوزن أو قوس وسهم. ويمكنك تجربة أكثر من واحدة في الزيارة."
@@ -400,8 +319,8 @@ export const contactSection = {
   label: t("Visit", "الزيارة"),
   headingLines: [t("COME AND", "تعال"), t("SHOOT", "وارمِ")],
   body: t(
-    "Messages are answered on Instagram. Tell them which discipline, how many of you, and roughly when.",
-    "نرد على الرسائل عبر إنستغرام. أخبرهم بالرياضة التي تريدها، وعدد الأشخاص، والوقت التقريبي."
+    "Messages are answered on Instagram. Tell them which range, how many of you, and roughly when.",
+    "نرد على الرسائل عبر إنستغرام. أخبرهم بالميدان الذي تريده، وعدد الأشخاص، والوقت التقريبي."
   ),
   closing: t("See you on the line.", "نراك على الخط."),
   /* Pre-filled prompt shown next to the message button. */
@@ -420,8 +339,8 @@ export const selector = {
   label: t("Not sure where to start?", "لست متأكداً من أين تبدأ؟"),
   heading: t("THREE QUESTIONS", "ثلاثة أسئلة"),
   sub: t(
-    "Answer three and you get a discipline, what it costs you in effort, and a message you can send as is.",
-    "أجب عن ثلاثة أسئلة وستحصل على رياضة مقترحة، وما تتطلبه منك، ورسالة جاهزة للإرسال كما هي."
+    "Answer three and you get a range, the reason for it, and a message you can send as is.",
+    "أجب عن ثلاثة أسئلة وستحصل على ميدان مقترح، وسبب اختياره، ورسالة جاهزة للإرسال."
   ),
   restart: t("Start again", "ابدأ من جديد"),
   resultKicker: t("Start with", "ابدأ بـ"),
@@ -461,7 +380,7 @@ export const selector = {
   ],
 };
 
-/* Recommendation copy per discipline. */
+/* Recommendation copy per range. */
 export const recommendations: Record<
   string,
   { title: I18n; why: I18n; message: I18n }
@@ -519,12 +438,11 @@ export const recommendations: Record<
 export const navItems = [
   { id: "hero", index: "01", label: t("Top", "الأعلى") },
   { id: "intro", index: "02", label: t("The Complex", "المجمع") },
-  { id: "experiences", index: "03", label: t("Disciplines", "الرياضات") },
-  { id: "activities", index: "04", label: t("Activities", "الأنشطة") },
-  { id: "selector", index: "05", label: t("Find Yours", "اختر تجربتك") },
-  { id: "session", index: "06", label: t("First Visit", "الزيارة الأولى") },
-  { id: "visit", index: "07", label: t("Hours", "المواعيد") },
-  { id: "contact", index: "08", label: t("Contact", "التواصل") },
+  { id: "experiences", index: "03", label: t("Ranges", "الميادين") },
+  { id: "selector", index: "04", label: t("Find Yours", "اختر تجربتك") },
+  { id: "session", index: "05", label: t("First Visit", "الزيارة الأولى") },
+  { id: "visit", index: "06", label: t("Hours", "المواعيد") },
+  { id: "contact", index: "07", label: t("Contact", "التواصل") },
 ];
 
 /* -------------------------------------------------------------------------- */

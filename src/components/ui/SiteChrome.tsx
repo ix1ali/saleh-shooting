@@ -19,6 +19,7 @@ import styles from "./SiteChrome.module.css";
 export default function SiteChrome() {
   const [open, setOpen] = useState(false);
   const [past, setPast] = useState(false);
+  const [atContact, setAtContact] = useState(false);
   const [section, setSection] = useState(0);
   const overlay = useRef<HTMLDivElement | null>(null);
   const bar = useRef<HTMLDivElement | null>(null);
@@ -54,20 +55,35 @@ export default function SiteChrome() {
         onEnterBack: () => setPast(true),
         onLeaveBack: () => setPast(false),
       });
+
+      /* The contact section already presents Message and Directions at full
+         size. Keeping the sticky bar up as well puts the same two actions on
+         screen twice, so it stands down once that section is in view. */
+      const contactEl = document.getElementById("contact");
+      if (contactEl) {
+        ScrollTrigger.create({
+          trigger: contactEl,
+          start: "top 72%",
+          end: "bottom bottom",
+          onToggle: (self) => setAtContact(self.isActive),
+        });
+      }
     },
     [version]
   );
 
+  const showQuick = past && !atContact;
+
   useIsoLayoutEffect(() => {
     if (!quick.current) return;
     gsap.to(quick.current, {
-      autoAlpha: past ? 1 : 0,
-      y: past ? 0 : 34,
+      autoAlpha: showQuick ? 1 : 0,
+      y: showQuick ? 0 : 34,
       duration: prefersReducedMotion() ? 0.2 : 0.75,
       ease: "expo.out",
       overwrite: true,
     });
-  }, [past]);
+  }, [showQuick]);
 
   /* --- Section tracking + progress ---------------------------------------- */
 
@@ -261,7 +277,7 @@ export default function SiteChrome() {
       </div>
 
       {/* ---- Scroll progress ---- */}
-      <div className={styles.progress} data-visible={past && !open} aria-hidden="true">
+      <div className={styles.progress} data-visible={past && !open && !atContact} aria-hidden="true">
         <span className={styles.progressNums}>
           <span className={styles.progressCurrent}>
             <span ref={currentNum}>{current}</span>

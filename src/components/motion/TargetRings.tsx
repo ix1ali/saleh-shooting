@@ -8,11 +8,14 @@ type Props = {
   className?: string;
   /** Hairline weight in viewBox units. */
   weight?: number;
-  tone?: "bone" | "mist" | "accent" | "mixed";
+  tone?: "bone" | "mist" | "accent" | "mixed" | "ink";
   /** Draws the filled centre. The hero uses this as its transition portal. */
   bullseye?: boolean;
   /** Adds the four cardinal sight ticks. */
   ticks?: boolean;
+  /** Rings fade toward the outside. Turn off for a printed paper target,
+      where every scoring ring is the same solid ink. */
+  fade?: boolean;
   style?: React.CSSProperties;
 };
 
@@ -28,6 +31,7 @@ export default function TargetRings({
   tone = "bone",
   bullseye = true,
   ticks = false,
+  fade = true,
   style,
 }: Props) {
   const step = 50 / (rings + 0.6);
@@ -44,8 +48,9 @@ export default function TargetRings({
     >
       {Array.from({ length: rings }).map((_, i) => {
         const r = step * (i + 1);
-        /* Outer rings sit back; inner rings carry more presence. */
-        const o = 0.22 + (i / rings) * 0.6;
+        /* Outer rings sit back; inner rings carry more presence — unless
+           this is a printed target, where the ink is uniform. */
+        const o = fade ? 0.22 + (i / rings) * 0.6 : 1;
         return (
           <circle
             key={i}

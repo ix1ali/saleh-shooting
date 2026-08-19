@@ -4,7 +4,6 @@ import SiteChrome from "@/components/ui/SiteChrome";
 import RangeHero from "@/components/sections/RangeHero";
 import IntroSection from "@/components/sections/IntroSection";
 import ExperienceStory from "@/components/sections/ExperienceStory";
-import ActivitiesGrid from "@/components/sections/ActivitiesGrid";
 import ExperienceSelector from "@/components/sections/ExperienceSelector";
 import SessionSteps from "@/components/sections/SessionSteps";
 import HoursLocation from "@/components/sections/HoursLocation";
@@ -21,7 +20,6 @@ export default function Home() {
         <RangeHero />
         <IntroSection />
         <ExperienceStory />
-        <ActivitiesGrid />
         <ExperienceSelector />
         <SessionSteps />
         <HoursLocation />

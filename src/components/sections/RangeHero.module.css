@@ -1,14 +1,15 @@
 /* =========================================================================
-   HERO — standing on the line.
-   The lane is the facility's own photograph rather than a drawn one. Scroll
-   pushes the camera into it, the room darkens around the centre, and the
-   brand rings expand out of that centre to become the doorway into the next
-   section. Everything sits on one centre axis on purpose.
+   HERO — the lane, in real 3D.
+   Floor, ceiling and walls are planes in space and the camera is a single
+   translateZ driven by scroll. The blue LED strips are not decoration: they
+   are what the facility is actually lit by, and running them down the walls
+   in perspective is what gives the corridor its depth.
+   The far end carries a real photograph, and the bullseye becomes the door.
    ====================================================================== */
 
 .hero {
   position: relative;
-  height: 320svh;
+  height: 420svh;
   background: var(--void);
 }
 
@@ -19,71 +20,250 @@
   overflow: hidden;
   background: var(--void);
   isolation: isolate;
+  /* Defaults so the lane is lit if scripting never runs. The timeline takes
+     these over synchronously before the first painted frame. */
+  --sceneOn: 1;
+  --lightsOn: 1;
 }
 
-/* ---- The photograph -------------------------------------------------- */
+/* ---- 3D stage --------------------------------------------------------- */
 
-.stage {
+.world {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  perspective: 300px;
+  perspective-origin: 50% 42%;
+  transform-style: preserve-3d;
 }
 
-.plate {
+.camera {
   position: absolute;
   inset: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--camN, 0) * 1px));
   will-change: transform;
-  transform-origin: 50% 42%;
 }
 
-.plateImg { position: absolute; inset: 0; }
-
-/* A blurred, enlarged copy behind the sharp frame. As the camera pushes in
-   this bleeds past the edges, so the crop never shows a hard boundary. */
-.halo {
+.plane {
   position: absolute;
-  inset: -12%;
-  filter: blur(26px) saturate(1.2);
-  opacity: 0.5;
-  transform: scale(1.15);
+  left: 50%;
+  top: 42%;
+  backface-visibility: hidden;
 }
 
-/* ---- Light ------------------------------------------------------------ */
+/* ---- Floor ------------------------------------------------------------ */
 
-/* The blue LED wash the room is genuinely lit by, pushed a little further. */
-.wash {
+.floor {
+  width: var(--laneW);
+  height: var(--laneLen);
+  transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateY(var(--floorY)) rotateX(90deg);
+  background:
+    /* Firing line, painted across the lane near the shooter. */
+    linear-gradient(to top,
+      transparent calc(50% + 190px),
+      rgba(242, 246, 251, 0.16) calc(50% + 190px),
+      rgba(242, 246, 251, 0.16) calc(50% + 194px),
+      transparent calc(50% + 194px)),
+    /* Lane centre line. */
+    linear-gradient(90deg,
+      transparent calc(50% - 0.5px),
+      rgba(242, 246, 251, 0.05) calc(50% - 0.5px),
+      rgba(242, 246, 251, 0.05) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)),
+    /* The blue floor wash the strips throw down. */
+    linear-gradient(to top,
+      rgba(27, 95, 184, 0.34) 0%,
+      rgba(18, 66, 143, 0.16) 26%,
+      transparent 58%),
+    linear-gradient(to top, #1A2130 0%, #131A27 24%, #0B111C 56%, #05080F 100%),
+    #05080F;
+}
+
+.ceiling {
+  width: var(--laneW);
+  height: var(--laneLen);
+  transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateY(var(--ceilY)) rotateX(-90deg);
+  background: linear-gradient(to bottom, #1B2331 0%, #111823 52%, #070C15 100%);
+}
+
+/* ---- Walls, with the LED strips --------------------------------------- */
+
+.wall {
+  width: var(--laneLen);
+  height: var(--laneH);
+  background:
+    /* The strip itself, plus its bloom above and below. */
+    linear-gradient(to bottom,
+      transparent 26%,
+      rgba(46, 144, 245, 0.10) 33%,
+      rgba(111, 190, 255, 0.95) 35.4%,
+      rgba(180, 222, 255, 1) 36.2%,
+      rgba(111, 190, 255, 0.95) 37%,
+      rgba(46, 144, 245, 0.10) 40%,
+      transparent 48%),
+    /* A second, lower strip at bench height. */
+    linear-gradient(to bottom,
+      transparent 68%,
+      rgba(46, 144, 245, 0.07) 72%,
+      rgba(46, 144, 245, 0.55) 74.2%,
+      rgba(46, 144, 245, 0.07) 77%,
+      transparent 82%),
+    /* Panel joints down the length of the lane. */
+    repeating-linear-gradient(90deg,
+      rgba(242, 246, 251, 0.055) 0px,
+      rgba(242, 246, 251, 0.055) 1px,
+      transparent 1px,
+      transparent 44px),
+    linear-gradient(to right, #070C15 0%, #131B29 42%, #1D2739 100%);
+}
+
+.wallL { transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateX(var(--wallNeg)) rotateY(90deg); }
+.wallR { transform: translate(-50%, -50%) translateZ(var(--laneShift)) translateX(var(--wallPos)) rotateY(-90deg); }
+
+/* ---- Depth furniture --------------------------------------------------- */
+
+/* Booth dividers. The strongest parallax cue as the camera advances. */
+.divider {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 34px;
+  height: 116px;
+  margin-left: -17px;
+  margin-top: -58px;
+  background: linear-gradient(to bottom, #2E3949 0%, #1B2432 66%, #0D131E 100%);
+  box-shadow: inset 0 1px 0 rgba(242, 246, 251, 0.12);
+}
+
+/* A blue edge light on the leading face of each divider. */
+.dividerEdge {
+  position: absolute;
+  inset-block: 8px;
+  inline-size: 2px;
+  background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+  opacity: 0.85;
+}
+
+/* Overhead housings. */
+.light {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 104px;
+  height: 10px;
+  margin-left: -52px;
+  background: linear-gradient(to bottom,
+    rgba(242, 246, 251, 0.95),
+    rgba(200, 226, 255, 0.5) 55%,
+    rgba(111, 190, 255, 0.06));
+  opacity: var(--lightsOn, 0);
+}
+
+/* The pool each housing lays on the floor. */
+.pool {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 250px;
+  height: 290px;
+  margin-left: -125px;
+  margin-top: -145px;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(190, 220, 255, 0.13), rgba(46, 144, 245, 0.05) 52%, transparent 74%);
+  opacity: var(--lightsOn, 0);
+}
+
+/* Distance markings across the floor. */
+.marker {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: var(--laneW);
+  height: 2px;
+  margin-left: calc(var(--laneW) / -2);
+  background: rgba(242, 246, 251, 0.12);
+}
+
+/* ---- Far end ----------------------------------------------------------- */
+
+/* A real photograph of the range, mounted at the end of the lane. */
+.backwall {
+  width: var(--laneW);
+  height: var(--laneH);
+  transform: translate(-50%, -50%) translateZ(var(--backZ));
+  overflow: hidden;
+  background: #070C15;
+}
+
+.backwallPhoto { position: absolute; inset: 0; }
+
+/* The target carrier. */
+.targetRig {
+  position: absolute;
+  left: 50%;
+  /* Sits on the perspective origin, so the bullseye never drifts off the
+     portal centre as the camera closes in. */
+  top: 42%;
+  width: 190px;
+  height: 230px;
+  margin-left: -95px;
+  margin-top: -115px;
+  transform: translateZ(var(--targetZ));
+}
+
+.hanger {
+  position: absolute;
+  left: 50%;
+  top: -46px;
+  width: 2px;
+  height: 46px;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, rgba(242, 246, 251, 0.06), rgba(242, 246, 251, 0.4));
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  padding: 9px;
+  background: linear-gradient(160deg, #2C3646 0%, #171E2B 100%);
+  box-shadow: inset 0 0 0 1px rgba(242, 246, 251, 0.12);
+}
+
+.paper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(102deg,
+      rgba(0, 0, 0, 0.026) 0px, rgba(0, 0, 0, 0.026) 0.5px, transparent 0.5px, transparent 2px),
+    radial-gradient(ellipse 80% 80% at 42% 34%, #FFFFFF 0%, #E8ECF2 62%, #C3CCD8 100%);
+  display: grid;
+  place-items: center;
+}
+
+.paperRings {
+  width: 84%;
+  height: 84%;
+}
+
+/* The scoring rings are printed on the paper, so they have to scale with it.
+   The shared non-scaling-stroke keeps every other use of the motif a crisp
+   hairline, but here it left the target looking like a blank white card. */
+.paperRings circle { vector-effect: none; }
+
+/* ---- Atmosphere -------------------------------------------------------- */
+
+.haze {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 46% 30% at 50% 40%,
-      rgba(46, 144, 245, 0.24) 0%,
-      rgba(27, 95, 184, 0.10) 42%,
-      transparent 72%);
+    radial-gradient(ellipse 34% 24% at 50% 42%,
+      rgba(120, 180, 250, 0.20) 0%,
+      rgba(46, 144, 245, 0.07) 46%,
+      transparent 74%);
+  opacity: var(--lightsOn, 0);
   mix-blend-mode: screen;
-}
-
-/* A slow sweep of light down the lane, so the frame is never completely still. */
-.sweep {
-  position: absolute;
-  inset-block: -20%;
-  inline-size: 46%;
-  inset-inline-start: -46%;
-  pointer-events: none;
-  background: linear-gradient(100deg,
-    transparent 0%,
-    rgba(111, 190, 255, 0.055) 42%,
-    rgba(111, 190, 255, 0.11) 52%,
-    transparent 100%);
-  mix-blend-mode: screen;
-  animation: sweep 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-@keyframes sweep {
-  0%   { transform: translateX(0); opacity: 0; }
-  12%  { opacity: 1; }
-  70%  { opacity: 1; }
-  100% { transform: translateX(340%); opacity: 0; }
 }
 
 .vignette {
@@ -91,59 +271,24 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 96% 72% at 50% 42%, transparent 38%, rgba(4, 7, 14, 0.72) 100%),
+    radial-gradient(ellipse 94% 74% at 50% 42%, transparent 42%, rgba(4, 7, 14, 0.66) 100%),
     linear-gradient(to bottom,
-      rgba(4, 7, 14, 0.74) 0%, transparent 24%,
-      transparent 38%, rgba(4, 7, 14, 0.96) 86%);
+      rgba(4, 7, 14, 0.60) 0%, transparent 20%,
+      transparent 44%, rgba(4, 7, 14, 0.95) 90%);
 }
 
 .grain {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.45;
   background:
     repeating-linear-gradient(0deg,
       rgba(0, 0, 0, 0.11) 0px, rgba(0, 0, 0, 0.11) 1px, transparent 1px, transparent 2px);
   mix-blend-mode: overlay;
 }
 
-/* ---- Rings on the line ------------------------------------------------ */
-
-/* Present over the lane from the first frame, breathing gently. It is the
-   same motif that becomes the doorway, so the transition is foreshadowed. */
-.sight {
-  position: absolute;
-  inset-block-start: 42%;
-  inset-inline-start: 50%;
-  inline-size: 128px;
-  block-size: 128px;
-  margin-inline-start: -64px;
-  margin-block-start: -64px;
-  opacity: var(--sightOpacity, 0.7);
-  transform: scale(var(--sightScale, 1));
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-.sightPulse {
-  position: absolute;
-  inset: 0;
-  --ring-color: var(--accent-bright);
-  --bull-color: var(--accent);
-  animation: sightPulse 4.4s var(--ease-inout) infinite;
-}
-
-@keyframes sightPulse {
-  0%, 100% { transform: scale(1);    opacity: 0.92; }
-  50%      { transform: scale(1.07); opacity: 0.6; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sweep, .sightPulse { animation: none; }
-}
-
-/* ---- Type ------------------------------------------------------------- */
+/* ---- Type -------------------------------------------------------------- */
 
 .hud {
   position: absolute;
@@ -156,17 +301,12 @@
   will-change: transform, opacity;
 }
 
-.hud a,
-.hud button { pointer-events: auto; }
-
 .eyebrow { margin-block-end: 16px; }
 
 .wordmark {
   color: var(--bone);
-  text-shadow: 0 4px 44px rgba(4, 7, 14, 0.75);
+  text-shadow: 0 4px 44px rgba(4, 7, 14, 0.8);
 }
-
-/* The second line carries the light, the way the lane does. */
 .wordmark span:last-child span { color: var(--accent-bright); }
 
 .support {
@@ -174,13 +314,11 @@
   max-inline-size: 30ch;
   color: rgba(242, 246, 251, 0.76);
   font-size: var(--t-small);
-  text-shadow: 0 2px 18px rgba(4, 7, 14, 0.85);
+  text-shadow: 0 2px 18px rgba(4, 7, 14, 0.9);
 }
 
-/* ---- Live facts strip -------------------------------------------------- */
+/* ---- Live facts -------------------------------------------------------- */
 
-/* Immediately useful and above the fold: what it is, and whether it is open
-   right now. This is what a first-time visitor is actually looking for. */
 .facts {
   display: flex;
   align-items: center;
@@ -199,11 +337,10 @@
   text-transform: uppercase;
   font-weight: 600;
   color: var(--bone);
-  background: rgba(12, 18, 32, 0.7);
+  background: rgba(12, 18, 32, 0.72);
   border: 1px solid rgba(242, 246, 251, 0.14);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  will-change: transform, opacity;
 }
 :global(html[lang="ar"]) .fact { letter-spacing: 0; text-transform: none; }
 
@@ -221,9 +358,6 @@
 @keyframes livePulse {
   0%, 100% { box-shadow: 0 0 0 2px var(--accent-glow); }
   50%      { box-shadow: 0 0 0 6px rgba(46, 144, 245, 0.05); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fact[data-open="true"] .factDot { animation: none; }
 }
 
 /* ---- Scroll cue -------------------------------------------------------- */
@@ -273,7 +407,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cueBead { animation: none; transform: translateY(60%); }
+  .cueBead, .fact[data-open="true"] .factDot { animation: none; }
+  .cueBead { transform: translateY(60%); }
 }
 
 /* ---- Doorway ----------------------------------------------------------- */
@@ -288,7 +423,6 @@
 
 .portalInner { position: absolute; inset: 0; }
 
-/* Rings sweeping out past the frame as the doorway opens. */
 .portalRings {
   position: absolute;
   inset-block-start: 42%;
@@ -302,4 +436,63 @@
   opacity: var(--ringsOpacity, 0);
   transform: scale(var(--ringsScale, 0.05));
   will-change: transform, opacity;
+}
+
+/* ---- The shot ----------------------------------------------------------
+   A round travels the lane and puts a hole in the paper. The tracer lives
+   inside the camera space, so perspective shrinks it as it goes rather than
+   the size being faked. Each shot leaves its hole behind for the rest of the
+   approach, so by the time the target fills the frame it carries a group.
+   -------------------------------------------------------------------- */
+
+.tracer {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 5px;
+  height: 26px;
+  margin-left: -2.5px;
+  margin-top: -13px;
+  border-radius: 3px;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(200, 230, 255, 0.9) 35%,
+    #FFFFFF 60%,
+    rgba(150, 205, 255, 0.6) 85%,
+    transparent 100%);
+  box-shadow: 0 0 12px 3px rgba(120, 190, 255, 0.85);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* The flash on the paper as a round lands. */
+.impact {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(150, 205, 255, 0.42) 34%,
+    transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.hole {
+  position: absolute;
+  width: 5.4%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: #0A0F1A;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.85),
+    0 0 0 0.7px rgba(255, 255, 255, 0.42);
+  opacity: 0;
+  will-change: opacity, transform;
 }
